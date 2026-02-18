@@ -12,6 +12,7 @@
             --accent-blue: #3498db;
             --text-main: #e0e0e0;
             --text-dim: #707075;
+            --glass-notif: rgba(15, 15, 20, 0.8);
         }
 
         * {
@@ -50,7 +51,6 @@
             100% { opacity: 1; transform: scale(1.1); }
         }
 
-        /* Barra de control superior */
         .title-bar {
             width: 100%;
             height: 45px;
@@ -84,7 +84,7 @@
         .btn-close { background: #e74c3c; }
         .control-btn:hover { transform: scale(1.2); filter: brightness(1.2); }
 
-        /* Header con Notificaciones */
+        /* Header */
         .welcome-header {
             display: flex;
             justify-content: space-between;
@@ -102,10 +102,7 @@
             transition: 0.3s;
         }
 
-        .notif-bell:hover {
-            background: rgba(255,255,255,0.08);
-            transform: scale(1.05);
-        }
+        .notif-bell:hover { background: rgba(255,255,255,0.08); transform: scale(1.05); }
 
         .notif-dot {
             position: absolute;
@@ -152,11 +149,7 @@
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .card:hover {
-            border-color: rgba(142, 68, 173, 0.4);
-            background: rgba(255, 255, 255, 0.05);
-            transform: translateY(-5px);
-        }
+        .card:hover { border-color: rgba(142, 68, 173, 0.4); background: rgba(255, 255, 255, 0.05); transform: translateY(-5px); }
 
         .card-title { font-size: 17px; font-weight: 600; margin-bottom: 10px; color: #fff; }
         .card-desc { color: var(--text-dim); font-size: 13.5px; line-height: 1.6; margin-bottom: 25px; }
@@ -177,36 +170,39 @@
         .btn:hover { background: var(--accent-purple); box-shadow: 0 0 15px rgba(142, 68, 173, 0.4); }
         .btn-main { background: linear-gradient(135deg, #8e44ad, #3498db); border: none; }
 
-        /* TOAST NOTIFICATION (Estilo Imagen Jake Smith) */
+        /* TOAST NOTIFICATION (MODERNO/DARK) */
         #notification-toast {
             position: absolute;
-            top: 60px;
-            right: 20px;
-            width: 320px;
-            background: white;
-            border-radius: 12px;
-            padding: 16px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            top: 65px;
+            right: 25px;
+            width: 340px;
+            background: var(--glass-notif);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 18px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
             display: flex;
             flex-direction: column;
             gap: 12px;
-            transform: translateX(400px);
-            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            transform: translateX(450px);
+            transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
             z-index: 200;
         }
 
         #notification-toast.active { transform: translateX(0); }
 
-        .toast-header { display: flex; align-items: center; gap: 12px; position: relative; }
-        .avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; }
-        .user-info { display: flex; flex-direction: column; }
-        .username { color: #111; font-weight: 700; font-size: 15px; }
-        .status-tag { color: #888; font-size: 12px; }
-        .close-toast { position: absolute; top: 0; right: 0; color: #111; cursor: pointer; font-size: 18px; font-weight: bold; }
+        .toast-header { display: flex; align-items: center; gap: 14px; position: relative; }
+        .avatar { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(142, 68, 173, 0.3); }
+        .username { color: #fff; font-weight: 600; font-size: 15px; }
+        .status-tag { color: var(--accent-purple); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .close-toast { position: absolute; top: -5px; right: -5px; color: var(--text-dim); cursor: pointer; font-size: 18px; transition: 0.2s; }
+        .close-toast:hover { color: #fff; }
 
-        .toast-body { color: #555; font-size: 13px; line-height: 1.5; }
-        .toast-footer { display: flex; gap: 15px; margin-top: 5px; }
-        .footer-link { color: #8e44ad; font-weight: 600; font-size: 12px; text-decoration: none; cursor: pointer; }
+        .toast-body { color: #bbb; font-size: 13px; line-height: 1.5; }
+        .toast-footer { display: flex; gap: 15px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 12px; }
+        .footer-link { color: #fff; font-weight: 600; font-size: 12px; text-decoration: none; cursor: pointer; opacity: 0.7; transition: 0.2s; }
+        .footer-link:hover { opacity: 1; color: var(--accent-blue); }
 
         .footer { margin-top: auto; display: flex; justify-content: space-between; align-items: center; padding-top: 20px; }
         .panic-btn { background: transparent; color: #ff4747; border: 1px solid rgba(255, 71, 71, 0.3); padding: 10px 25px; border-radius: 12px; cursor: pointer; font-size: 12px; font-weight: 600; transition: 0.3s; }
@@ -228,17 +224,17 @@
         <div class="close-toast" onclick="toggleNotif()">&times;</div>
         <div class="toast-header">
             <img class="avatar" src="https://media.discordapp.net/attachments/1229201422093123657/1472468816649785428/20b37448802be9f43bd4b20c8ff1e6ee.jpg?ex=69974c33&is=6995fab3&hm=ecf9853954e5e6f2509bf0e46a11168fc87644ddad5ed89b84ae5fb4939672fb&=&format=webp" alt="Dev">
-            <div class="user-info">
+            <div style="display: flex; flex-direction: column;">
                 <span class="username">@wantedbyfederals</span>
-                <span class="status-tag">Developer • Now</span>
+                <span class="status-tag">Developer • Just Now</span>
             </div>
         </div>
         <div class="toast-body">
             Este bypass se encuentra en desarrollo, por lo que cualquier tipo de error debe de ser reportado a mi Discord.
         </div>
         <div class="toast-footer">
-            <span class="footer-link">Dismiss</span>
-            <span class="footer-link" onclick="window.location.href='https://discord.gg/TU_LINK'">Discord</span>
+            <span class="footer-link" onclick="toggleNotif()">Dismiss</span>
+            <span class="footer-link" onclick="window.location.href='https://discord.gg/TU_LINK'">Discord Support</span>
         </div>
     </div>
 
@@ -262,9 +258,9 @@
             </div>
 
             <div class="card">
-                <div class="card-title">🛡️ Trace Deletion</div>
+                <div class="card-title">🛡️ Destruct Cheat</div>
                 <div class="card-desc">Execute deep-level metadata cleanup across all storage volumes.</div>
-                <button class="btn" onclick="send('clean_traces')">Start Scan</button>
+                <button class="btn" onclick="send('clean_traces')">Destruct Cheat</button>
             </div>
 
             <div class="card">
@@ -292,9 +288,16 @@
         function toggleNotif() {
             const toast = document.getElementById('notification-toast');
             toast.classList.toggle('active');
-            // Quitamos el punto rojo al abrir
-            document.querySelector('.notif-dot').style.display = 'none';
+            if (toast.classList.contains('active')) {
+                document.querySelector('.notif-dot').style.display = 'none';
+            }
         }
+
+        // Auto-mostrar notificación a los 2 segundos
+        setTimeout(() => {
+            const toast = document.getElementById('notification-toast');
+            if(!toast.classList.contains('active')) toggleNotif();
+        }, 2000);
 
         function handleDrag(e) {
             if (e.target.tagName !== 'BUTTON' && !e.target.closest('.notif-bell') && !e.target.closest('#notification-toast') && !e.target.classList.contains('control-btn')) {
