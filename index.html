@@ -6,19 +6,19 @@
     <title>DS4 Advanced Utility</title>
     <style>
         :root {
-            --bg-color: #08080a;
-            --card-bg: rgba(255, 255, 255, 0.03);
+            --bg-color: #050507;
+            --card-bg: rgba(255, 255, 255, 0.02);
             --accent-purple: #8e44ad;
             --accent-blue: #3498db;
             --text-main: #e0e0e0;
-            --text-dim: #808080;
+            --text-dim: #707075;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            user-select: none; /* Evita que se seleccione texto al arrastrar */
+            user-select: none;
         }
 
         body {
@@ -29,17 +29,38 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            position: relative;
+        }
+
+        /* FONDO MODERNO ANIMADO */
+        .bg-glow {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(142, 68, 173, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(52, 152, 219, 0.1) 0%, transparent 40%);
+            animation: pulseGlow 10s infinite alternate ease-in-out;
+        }
+
+        @keyframes pulseGlow {
+            0% { opacity: 0.5; transform: scale(1); }
+            100% { opacity: 1; transform: scale(1.1); }
         }
 
         /* Barra de control superior */
         .title-bar {
             width: 100%;
-            height: 40px;
+            height: 45px;
             display: flex;
             justify-content: flex-end;
             align-items: center;
-            padding: 0 15px;
-            background: transparent;
+            padding: 0 20px;
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
             position: absolute;
             top: 0;
             left: 0;
@@ -48,7 +69,7 @@
 
         .window-controls {
             display: flex;
-            gap: 15px;
+            gap: 12px;
         }
 
         .control-btn {
@@ -56,118 +77,125 @@
             width: 12px;
             height: 12px;
             border-radius: 50%;
-            transition: 0.2s;
+            transition: 0.3s;
+            border: 1px solid rgba(255,255,255,0.1);
         }
 
         .btn-min { background: #f1c40f; }
-        .btn-min:hover { background: #d4ac0d; box-shadow: 0 0 8px #f1c40f; }
-
         .btn-close { background: #e74c3c; }
-        .btn-close:hover { background: #c0392b; box-shadow: 0 0 8px #e74c3c; }
+        .control-btn:hover { transform: scale(1.2); filter: brightness(1.2); }
 
-        /* Contenido Principal */
+        /* Dashboard */
         .dashboard {
             flex: 1;
-            padding: 60px 50px 40px 50px;
+            padding: 80px 60px 40px 60px;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            z-index: 1;
         }
 
         .welcome-section {
-            margin-bottom: 40px;
+            margin-bottom: 45px;
         }
 
         h1 {
-            font-size: 26px;
-            font-weight: 500;
-            letter-spacing: -0.5px;
-        }
-
-        .subtitle {
-            color: var(--text-dim);
-            font-size: 14px;
-            margin-top: 5px;
+            font-size: 28px;
+            font-weight: 600;
+            background: linear-gradient(to right, #fff, #888);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
+            gap: 25px;
         }
 
         .card {
             background: var(--card-bg);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 16px;
-            padding: 24px;
-            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 20px;
+            padding: 28px;
+            backdrop-filter: blur(12px);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         .card:hover {
-            border-color: rgba(142, 68, 173, 0.3);
+            border-color: rgba(142, 68, 173, 0.4);
             background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
         .card-title {
-            font-size: 16px;
-            font-weight: 500;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            font-size: 17px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #fff;
         }
 
         .card-desc {
             color: var(--text-dim);
-            font-size: 13px;
-            line-height: 1.5;
-            margin-bottom: 20px;
-            min-height: 40px;
+            font-size: 13.5px;
+            line-height: 1.6;
+            margin-bottom: 25px;
         }
 
         .btn {
-            background: rgba(255, 255, 255, 0.08);
-            border: none;
-            color: white;
-            padding: 10px;
-            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            padding: 12px;
+            border-radius: 10px;
             font-size: 13px;
             cursor: pointer;
             width: 100%;
-            font-weight: 500;
-            transition: 0.2s;
+            font-weight: 600;
+            transition: 0.3s;
         }
 
-        .btn:hover { background: var(--accent-purple); }
-        .btn-main { background: linear-gradient(135deg, #8e44ad, #2980b9); }
+        .btn:hover {
+            background: var(--accent-purple);
+            border-color: var(--accent-purple);
+            box-shadow: 0 0 15px rgba(142, 68, 173, 0.4);
+        }
+
+        .btn-main {
+            background: linear-gradient(135deg, #8e44ad, #3498db);
+            border: none;
+        }
 
         .footer {
             margin-top: auto;
-            padding-top: 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding-top: 20px;
         }
 
         .panic-btn {
-            background: rgba(255, 71, 71, 0.05);
+            background: transparent;
             color: #ff4747;
-            border: 1px solid rgba(255, 71, 71, 0.15);
-            padding: 8px 20px;
-            border-radius: 8px;
+            border: 1px solid rgba(255, 71, 71, 0.3);
+            padding: 10px 25px;
+            border-radius: 12px;
             cursor: pointer;
             font-size: 12px;
+            font-weight: 600;
             transition: 0.3s;
         }
 
         .panic-btn:hover {
             background: #ff4747;
             color: white;
+            box-shadow: 0 0 20px rgba(255, 71, 71, 0.3);
         }
     </style>
 </head>
 <body onmousedown="handleDrag(event)">
+
+    <div class="bg-glow"></div>
 
     <div class="title-bar">
         <div class="window-controls">
@@ -178,45 +206,46 @@
 
     <div class="dashboard">
         <div class="welcome-section">
-            <h1>Welcome Back, Developer</h1>
-            <div class="subtitle">Managing system integrity and trace encryption.</div>
+            <h1>Welcome Back</h1>
+            <div class="subtitle">System integrity verified. Ready for deployment.</div>
         </div>
 
         <div class="grid">
             <div class="card">
-                <div class="card-title">🚀 Environment</div>
-                <div class="card-desc">Initialize secure runtime and system policies.</div>
-                <button class="btn btn-main" onclick="send('init_env')">Initialize</button>
+                <div class="card-title">🚀 Core Environment</div>
+                <div class="card-desc">Initialize advanced kernel bypass and system protocols.</div>
+                <button class="btn btn-main" onclick="send('init_env')">Initialize System</button>
             </div>
 
             <div class="card">
-                <div class="card-title">🛡️ Trace Cleaner</div>
-                <div class="card-desc">Deep scan and removal of VLC and drive metadata.</div>
-                <button class="btn" onclick="send('clean_traces')">Clean Traces</button>
+                <div class="card-title">🛡️ Trace Deletion</div>
+                <div class="card-desc">Execute deep-level metadata cleanup across all storage volumes.</div>
+                <button class="btn" onclick="send('clean_traces')">Start Scan</button>
             </div>
 
             <div class="card">
-                <div class="card-title">🔑 Registry</div>
-                <div class="card-desc">Purge shellbags and specific cheat registry keys.</div>
-                <button class="btn" onclick="send('clean_reg')">Purge Registry</button>
+                <div class="card-title">🔑 Registry Purge</div>
+                <div class="card-desc">Remove persistent registry keys and shellbag history traces.</div>
+                <button class="btn" onclick="send('clean_reg')">Purge Keys</button>
             </div>
 
             <div class="card">
-                <div class="card-title">🧠 RAM Sanitize</div>
-                <div class="card-desc">Wipe specific strings from system memory.</div>
+                <div class="card-title">🧠 Delete Memory Strings</div>
+                <div class="card-desc">Sanitize RAM strings to prevent string-based detection methods.</div>
                 <button class="btn" onclick="send('sanitize_ram')">Sanitize Memory</button>
             </div>
         </div>
 
         <div class="footer">
-            <div class="subtitle">Session: <span style="color: #2ecc71;">Protected</span></div>
-            <button class="panic-btn" onclick="send('panic')">Terminate & Self-Destruct</button>
+            <div style="font-size: 12px; color: var(--text-dim);">
+                Security: <span style="color: #2ecc71; font-weight: bold;">ENCRYPTED</span>
+            </div>
+            <button class="panic-btn" onclick="send('panic')">Self-Destruct</button>
         </div>
     </div>
 
     <script>
         function handleDrag(e) {
-            // Solo arrastra si no estamos haciendo clic en un botón o tarjeta interactiva
             if (e.target.tagName !== 'BUTTON' && !e.target.classList.contains('control-btn')) {
                 send('drag_window');
             }
