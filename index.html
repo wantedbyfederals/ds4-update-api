@@ -32,7 +32,6 @@
             position: relative;
         }
 
-        /* FONDO MODERNO ANIMADO */
         .bg-glow {
             position: absolute;
             top: 0;
@@ -85,6 +84,40 @@
         .btn-close { background: #e74c3c; }
         .control-btn:hover { transform: scale(1.2); filter: brightness(1.2); }
 
+        /* Header con Notificaciones */
+        .welcome-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 45px;
+        }
+
+        .notif-bell {
+            cursor: pointer;
+            position: relative;
+            padding: 10px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: 0.3s;
+        }
+
+        .notif-bell:hover {
+            background: rgba(255,255,255,0.08);
+            transform: scale(1.05);
+        }
+
+        .notif-dot {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 8px;
+            height: 8px;
+            background: #e74c3c;
+            border-radius: 50%;
+            border: 2px solid var(--bg-color);
+        }
+
         /* Dashboard */
         .dashboard {
             flex: 1;
@@ -94,10 +127,6 @@
             z-index: 1;
         }
 
-        .welcome-section {
-            margin-bottom: 45px;
-        }
-
         h1 {
             font-size: 28px;
             font-weight: 600;
@@ -105,6 +134,8 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
+
+        .subtitle { color: var(--text-dim); font-size: 14px; margin-top: 5px; }
 
         .grid {
             display: grid;
@@ -125,22 +156,10 @@
             border-color: rgba(142, 68, 173, 0.4);
             background: rgba(255, 255, 255, 0.05);
             transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        .card-title {
-            font-size: 17px;
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: #fff;
-        }
-
-        .card-desc {
-            color: var(--text-dim);
-            font-size: 13.5px;
-            line-height: 1.6;
-            margin-bottom: 25px;
-        }
+        .card-title { font-size: 17px; font-weight: 600; margin-bottom: 10px; color: #fff; }
+        .card-desc { color: var(--text-dim); font-size: 13.5px; line-height: 1.6; margin-bottom: 25px; }
 
         .btn {
             background: rgba(255, 255, 255, 0.05);
@@ -155,42 +174,43 @@
             transition: 0.3s;
         }
 
-        .btn:hover {
-            background: var(--accent-purple);
-            border-color: var(--accent-purple);
-            box-shadow: 0 0 15px rgba(142, 68, 173, 0.4);
-        }
+        .btn:hover { background: var(--accent-purple); box-shadow: 0 0 15px rgba(142, 68, 173, 0.4); }
+        .btn-main { background: linear-gradient(135deg, #8e44ad, #3498db); border: none; }
 
-        .btn-main {
-            background: linear-gradient(135deg, #8e44ad, #3498db);
-            border: none;
-        }
-
-        .footer {
-            margin-top: auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 20px;
-        }
-
-        .panic-btn {
-            background: transparent;
-            color: #ff4747;
-            border: 1px solid rgba(255, 71, 71, 0.3);
-            padding: 10px 25px;
+        /* TOAST NOTIFICATION (Estilo Imagen Jake Smith) */
+        #notification-toast {
+            position: absolute;
+            top: 60px;
+            right: 20px;
+            width: 320px;
+            background: white;
             border-radius: 12px;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: 600;
-            transition: 0.3s;
+            padding: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            transform: translateX(400px);
+            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 200;
         }
 
-        .panic-btn:hover {
-            background: #ff4747;
-            color: white;
-            box-shadow: 0 0 20px rgba(255, 71, 71, 0.3);
-        }
+        #notification-toast.active { transform: translateX(0); }
+
+        .toast-header { display: flex; align-items: center; gap: 12px; position: relative; }
+        .avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; }
+        .user-info { display: flex; flex-direction: column; }
+        .username { color: #111; font-weight: 700; font-size: 15px; }
+        .status-tag { color: #888; font-size: 12px; }
+        .close-toast { position: absolute; top: 0; right: 0; color: #111; cursor: pointer; font-size: 18px; font-weight: bold; }
+
+        .toast-body { color: #555; font-size: 13px; line-height: 1.5; }
+        .toast-footer { display: flex; gap: 15px; margin-top: 5px; }
+        .footer-link { color: #8e44ad; font-weight: 600; font-size: 12px; text-decoration: none; cursor: pointer; }
+
+        .footer { margin-top: auto; display: flex; justify-content: space-between; align-items: center; padding-top: 20px; }
+        .panic-btn { background: transparent; color: #ff4747; border: 1px solid rgba(255, 71, 71, 0.3); padding: 10px 25px; border-radius: 12px; cursor: pointer; font-size: 12px; font-weight: 600; transition: 0.3s; }
+        .panic-btn:hover { background: #ff4747; color: white; }
     </style>
 </head>
 <body onmousedown="handleDrag(event)">
@@ -204,10 +224,34 @@
         </div>
     </div>
 
+    <div id="notification-toast">
+        <div class="close-toast" onclick="toggleNotif()">&times;</div>
+        <div class="toast-header">
+            <img class="avatar" src="https://media.discordapp.net/attachments/1229201422093123657/1472468816649785428/20b37448802be9f43bd4b20c8ff1e6ee.jpg?ex=69974c33&is=6995fab3&hm=ecf9853954e5e6f2509bf0e46a11168fc87644ddad5ed89b84ae5fb4939672fb&=&format=webp" alt="Dev">
+            <div class="user-info">
+                <span class="username">@wantedbyfederals</span>
+                <span class="status-tag">Developer • Now</span>
+            </div>
+        </div>
+        <div class="toast-body">
+            Este bypass se encuentra en desarrollo, por lo que cualquier tipo de error debe de ser reportado a mi Discord.
+        </div>
+        <div class="toast-footer">
+            <span class="footer-link">Dismiss</span>
+            <span class="footer-link" onclick="window.location.href='https://discord.gg/TU_LINK'">Discord</span>
+        </div>
+    </div>
+
     <div class="dashboard">
-        <div class="welcome-section">
-            <h1>Welcome Back</h1>
-            <div class="subtitle">System integrity verified. Ready for deployment.</div>
+        <div class="welcome-header">
+            <div class="welcome-section">
+                <h1>Welcome Back</h1>
+                <div class="subtitle">System integrity verified. Ready for deployment.</div>
+            </div>
+            <div class="notif-bell" onclick="toggleNotif()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                <div class="notif-dot"></div>
+            </div>
         </div>
 
         <div class="grid">
@@ -238,15 +282,22 @@
 
         <div class="footer">
             <div style="font-size: 12px; color: var(--text-dim);">
-                Security: <span style="color: #2ecc71; font-weight: bold;">ENCRYPTED</span>
+                Status: <span style="color: #2ecc71; font-weight: bold;">UPDATED</span>
             </div>
             <button class="panic-btn" onclick="send('panic')">Self-Destruct</button>
         </div>
     </div>
 
     <script>
+        function toggleNotif() {
+            const toast = document.getElementById('notification-toast');
+            toast.classList.toggle('active');
+            // Quitamos el punto rojo al abrir
+            document.querySelector('.notif-dot').style.display = 'none';
+        }
+
         function handleDrag(e) {
-            if (e.target.tagName !== 'BUTTON' && !e.target.classList.contains('control-btn')) {
+            if (e.target.tagName !== 'BUTTON' && !e.target.closest('.notif-bell') && !e.target.closest('#notification-toast') && !e.target.classList.contains('control-btn')) {
                 send('drag_window');
             }
         }
