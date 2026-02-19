@@ -33,14 +33,14 @@
             position: relative;
         }
 
-        /* --- ANIMACIONES DE INICIO --- */
+        /* ANIMACIÓN DE ENTRADA MEJORADA */
         @keyframes revealEntry {
-            from { opacity: 0; transform: translateY(15px); }
+            from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         .animate-in {
-            animation: revealEntry 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            animation: revealEntry 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
         }
 
         .bg-glow {
@@ -92,12 +92,11 @@
 
         .btn-min { background: #f1c40f; }
         .btn-close { background: #e74c3c; }
-        .control-btn:hover { transform: scale(1.2); filter: brightness(1.2); }
 
         .dashboard {
             flex: 1;
-            /* AJUSTE: Aumentado el padding inferior de 40px a 65px */
-            padding: 80px 60px 65px 60px;
+            /* AJUSTE: Reducimos el padding superior para subir todo el contenido */
+            padding: 60px 60px 80px 60px; 
             display: flex;
             flex-direction: column;
             z-index: 1;
@@ -107,7 +106,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 45px;
+            /* AJUSTE: Espacio un poco más compacto arriba */
+            margin-bottom: 35px;
         }
 
         .notif-bell {
@@ -201,8 +201,8 @@
         .btn-main { 
             background: linear-gradient(135deg, #8e44ad, #3498db); 
             border: none; 
-            /* AJUSTE: Bajamos un poquito el botón para nivelarlo */
-            margin-top: 8px; 
+            /* AJUSTE: Nivelado según tus especificaciones */
+            margin-top: 10px; 
         }
 
         #action-container {
@@ -276,13 +276,13 @@
         .footer-link { color: #fff; font-weight: 600; font-size: 12px; text-decoration: none; cursor: pointer; opacity: 0.7; }
         .footer-link:hover { opacity: 1; color: var(--accent-blue); }
 
-        /* AJUSTE: Separamos el footer del borde inferior */
+        /* AJUSTE: El footer se mantiene abajo con aire suficiente */
         .footer { 
             margin-top: auto; 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
-            padding-bottom: 10px; 
+            padding-bottom: 25px; 
         }
         
         .status-text {
