@@ -33,16 +33,6 @@
             position: relative;
         }
 
-        /* --- ANIMACIONES DE INICIO --- */
-        @keyframes revealEntry {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .animate-in {
-            animation: revealEntry 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-        }
-
         .bg-glow {
             position: absolute;
             top: 0;
@@ -94,15 +84,6 @@
         .btn-close { background: #e74c3c; }
         .control-btn:hover { transform: scale(1.2); filter: brightness(1.2); }
 
-        .dashboard {
-            flex: 1;
-            /* AJUSTE: Aumentado el padding inferior de 40px a 65px */
-            padding: 80px 60px 65px 60px;
-            display: flex;
-            flex-direction: column;
-            z-index: 1;
-        }
-
         .welcome-header {
             display: flex;
             justify-content: space-between;
@@ -131,6 +112,14 @@
             background: #e74c3c;
             border-radius: 50%;
             border: 2px solid var(--bg-color);
+        }
+
+        .dashboard {
+            flex: 1;
+            padding: 80px 60px 40px 60px;
+            display: flex;
+            flex-direction: column;
+            z-index: 1;
         }
 
         h1 {
@@ -181,6 +170,7 @@
         .card-title { font-size: 17px; font-weight: 600; color: #fff; }
         .card-desc { color: var(--text-dim); font-size: 13.5px; line-height: 1.6; margin-bottom: 25px; }
 
+        /* TIPOGRAFÍA MEJORADA EN BOTONES */
         .btn {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -190,6 +180,7 @@
             cursor: pointer;
             width: 100%;
             transition: 0.3s;
+            /* Estilos de Tipografía Moderna */
             font-size: 11px;
             font-weight: 800;
             text-transform: uppercase;
@@ -197,14 +188,9 @@
         }
 
         .btn:hover { background: var(--accent-purple); box-shadow: 0 0 15px rgba(142, 68, 173, 0.4); }
-        
-        .btn-main { 
-            background: linear-gradient(135deg, #8e44ad, #3498db); 
-            border: none; 
-            /* AJUSTE: Bajamos un poquito el botón para nivelarlo */
-            margin-top: 8px; 
-        }
+        .btn-main { background: linear-gradient(135deg, #8e44ad, #3498db); border: none; }
 
+        /* NOTIFICACIONES DE ACCIÓN (Action Toasts) */
         #action-container {
             position: absolute;
             bottom: 30px;
@@ -244,8 +230,11 @@
             animation: spin 0.8s linear infinite;
         }
 
-        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
 
+        /* NOTIFICATION TOAST ANTERIOR */
         #notification-toast {
             position: absolute;
             top: 65px;
@@ -276,15 +265,9 @@
         .footer-link { color: #fff; font-weight: 600; font-size: 12px; text-decoration: none; cursor: pointer; opacity: 0.7; }
         .footer-link:hover { opacity: 1; color: var(--accent-blue); }
 
-        /* AJUSTE: Separamos el footer del borde inferior */
-        .footer { 
-            margin-top: auto; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            padding-bottom: 10px; 
-        }
+        .footer { margin-top: auto; display: flex; justify-content: space-between; align-items: center; padding-top: 20px; }
         
+        /* ESTILO STATUS UPDATED */
         .status-text {
             font-size: 10px;
             font-weight: 800;
@@ -301,6 +284,7 @@
             border-radius: 12px;
             cursor: pointer;
             transition: 0.3s;
+            /* Tipografía moderna */
             font-size: 10px;
             font-weight: 800;
             text-transform: uppercase;
@@ -341,7 +325,7 @@
     </div>
 
     <div class="dashboard">
-        <div class="welcome-header animate-in">
+        <div class="welcome-header">
             <div class="welcome-section">
                 <h1>Welcome Back</h1>
                 <div class="subtitle">System integrity verified. Ready for deployment.</div>
@@ -352,7 +336,7 @@
             </div>
         </div>
 
-        <div class="grid animate-in" style="animation-delay: 0.1s;">
+        <div class="grid">
             <div class="card">
                 <div class="card-header">
                     <div class="card-icon"><i data-lucide="terminal"></i></div>
@@ -390,7 +374,7 @@
             </div>
         </div>
 
-        <div class="footer animate-in" style="animation-delay: 0.2s;">
+        <div class="footer">
             <div class="status-text">
                 Status: <span style="color: #2ecc71;">Updated</span>
             </div>
@@ -409,6 +393,7 @@
             }
         }
 
+        // Nueva función de acción para notificaciones de progreso
         function action(label, cmd) {
             const container = document.getElementById('action-container');
             const toast = document.createElement('div');
