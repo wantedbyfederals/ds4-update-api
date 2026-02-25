@@ -227,24 +227,19 @@
         const DB_URL = "https://revengescanner-default-rtdb.firebaseio.com";
         let activePin = null;
 
-        // SEGURIDAD POR HASH (Clave: wantedbyfederals0800!)
-        const _0xHASH = "80f3316f73587b649514787a264a787a";
-        const _0xS = (s) => {
-            let h = 0;
-            for(let i = 0; i < s.length; i++) h = Math.imul(31, h) + s.charCodeAt(i) | 0;
-            return Math.abs(h).toString(16) + (s.length * 12345).toString(16);
-        };
+        // LLAVES OFUSCADAS (Nadie sabrá qué dicen al leer el código)
+        const _v1 = "YWRtaW4="; // admin
+        const _v2 = "d2FudGVkYnlmZWRlcmFsczA4MDAh"; // wantedbyfederals0800!
 
         function login() {
-            const userIn = document.getElementById('op-id').value.trim();
-            const keyIn = document.getElementById('op-key').value.trim();
-            const btn = document.getElementById('login-btn');
+            const u = document.getElementById('op-id').value.trim();
+            const k = document.getElementById('op-key').value.trim();
 
-            if (userIn === "admin" && _0xS(keyIn) === _0xHASH) {
+            if (btoa(u) === _v1 && btoa(k) === _v2) {
                 sessionStorage.setItem('revenge_session', 'active');
                 showMainUI();
             } else {
-                alert("DENIED: INVALID OPERATOR OR KEY");
+                alert("DENIED: UNAUTHORIZED");
             }
         }
 
@@ -254,7 +249,7 @@
         }
 
         function showMainUI() {
-            document.getElementById('auth-screen').classList.add('hidden');
+            document.getElementById('auth-screen').style.display = 'none';
             document.getElementById('sidebar-ui').classList.remove('hidden');
             document.getElementById('main-ui').classList.remove('hidden');
             handleRouting();
