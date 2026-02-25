@@ -359,30 +359,30 @@ return;
 }
 
 container.innerHTML = filtered.map(f => {
-    let colorClass = "bg-red-600/20 text-red-500 border-red-500/20";
-    let borderStyle = "border-left-color: #ff4141";
-    let categoryName = "CRITICAL";
+    let colorClass = "bg-red-600/20 text-red-500 border-red-500/20";
+    let borderStyle = "border-left-color: #ff4141";
+    let categoryName = "CRITICAL";
 
-    if(f.category === 'Warning') {
-        colorClass = "bg-orange-600/20 text-orange-500 border-orange-500/20";
-        borderStyle = "border-left-color: #f97316";
-        categoryName = "WARNING";
-    } else if(f.category === 'Unsigned Files') {
-        colorClass = "bg-purple-600/20 text-purple-500 border-purple-500/20";
-        borderStyle = "border-left-color: #a855f7";
-        categoryName = "UNSIGNED";
-    }
+    if(f.category === 'Warning') {
+        colorClass = "bg-orange-600/20 text-orange-500 border-orange-500/20";
+        borderStyle = "border-left-color: #f97316";
+        categoryName = "WARNING";
+    } else if(f.category === 'Unsigned Files') {
+        colorClass = "bg-purple-600/20 text-purple-500 border-purple-500/20";
+        borderStyle = "border-left-color: #a855f7";
+        categoryName = "UNSIGNED";
+    }
 
-    return `
-    <div class="finding-entry" style="${borderStyle}">
-        <div class="flex justify-between items-start mb-2">
-            <h4 class="text-[11px] font-black uppercase tracking-tight text-white">${f.title}</h4>
-            <span class="text-[8px] ${colorClass} px-1.5 py-0.5 rounded font-black uppercase border">${categoryName}</span>
-        </div>
-        <p class="text-[10px] text-gray-400 font-mono italic break-all">
-            ${f.detail}
-        </p>
-    </div>`;
+    return `
+    <div class="finding-entry" style="${borderStyle}">
+        <div class="flex justify-between items-start mb-2">
+            <h4 class="text-[11px] font-black uppercase tracking-tight text-white">${f.title}</h4>
+            <span class="text-[8px] ${colorClass} px-1.5 py-0.5 rounded font-black uppercase border">${categoryName}</span>
+        </div>
+        <p class="text-[10px] text-gray-400 font-mono italic break-all">
+            ${f.detail}
+        </p>
+    </div>`;
 }).join('');
 }
 
@@ -477,12 +477,12 @@ ${data.pcName || "UNKNOWN"}
 </div>
 
 <div class="col-span-12 lg:col-span-8 flex flex-col gap-6">
-<div>
+<div class="w-full">
 <h3 class="text-xl font-black uppercase italic mb-6 flex items-center gap-3 text-white">
 <span class="w-8 h-[2px] bg-red-600"></span> Live Analysis Findings
 </h3>
 <div id="findings-container" class="custom-scrollbar">
-<div id="findings-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+<div id="findings-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full"></div>
 </div>
 </div>
 
@@ -493,7 +493,7 @@ ${data.pcName || "UNKNOWN"}
 </h3>
 <div class="relative w-64">
 <i class="fa fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-[10px]"></i>
-<input type="text" id="recent-search" onkeyup="filterRecentTable()" placeholder="SEARCH PROCESS OR PATH..." 
+<input type="text" id="recent-search" onkeyup="filterRecentTable()" placeholder="SEARCH PROCESS OR PATH..." 
 class="w-full bg-black/40 border border-white/10 p-2 pl-8 rounded-lg text-[10px] font-mono outline-none focus:border-red-500 text-white transition-colors">
 </div>
 </div>
@@ -509,19 +509,19 @@ class="w-full bg-black/40 border border-white/10 p-2 pl-8 rounded-lg text-[10px]
 </thead>
 <tbody>
 ${recentData.length > 0 ? recentData.sort((a, b) => new Date(b.lastRun) - new Date(a.lastRun)).map(app => {
-    let statusText = String(app.status).toUpperCase();
-    let statusColor = "text-gray-500";
+    let rawStatus = String(app.status).trim().toUpperCase();
+    let statusText = "UNSIGNED";
+    let statusColor = "text-orange-500";
     
-    if(statusText === "TRUE" || statusText === "SIGNED") {
+    if(rawStatus === "TRUE" || rawStatus === "SIGNED" || rawStatus === "SUCCESS") {
         statusColor = "text-green-500";
         statusText = "TRUE";
-    } else if(statusText === "INVALID SIGNATURE") {
-        statusColor = "text-yellow-500";
-    } else if(statusText === "DELETED") {
+    } else if(rawStatus === "DELETED" || rawStatus === "NOT FOUND") {
         statusColor = "text-red-500";
-    } else {
-        statusColor = "text-orange-500";
-        statusText = "UNSIGNED";
+        statusText = "DELETED";
+    } else if(rawStatus === "INVALID" || rawStatus === "INVALID SIGNATURE") {
+        statusColor = "text-yellow-500";
+        statusText = "INVALID";
     }
 
     return `
