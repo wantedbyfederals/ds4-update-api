@@ -227,18 +227,16 @@
         const DB_URL = "https://revengescanner-default-rtdb.firebaseio.com";
         let activePin = null;
 
-        // SEGURIDAD LOCAL (Hardcoded para evitar fallos de Firebase en login)
+        // ACCESO SINCRONIZADO CON FIREBASE
         const AUTH_CONFIG = {
             op: "admin",
             key: "wantedbyfederals0800!"
         };
 
         function login() {
-            const userIn = document.getElementById('op-id').value.trim();
+            const userIn = document.getElementById('op-id').value.trim().toLowerCase();
             const keyIn = document.getElementById('op-key').value.trim();
-            const btn = document.getElementById('login-btn');
 
-            // Validación instantánea sin peticiones de red
             if (userIn === AUTH_CONFIG.op && keyIn === AUTH_CONFIG.key) {
                 localStorage.setItem('revenge_auth', userIn);
                 showMainUI();
