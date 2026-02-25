@@ -1,68 +1,85 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Staff Panel | Revenge Anti-Cheat</title>
+    <title>Revenge | Staff Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background-color: #050505; color: #e5e7eb; font-family: 'Inter', sans-serif; }
-        .glass-card { background: rgba(17, 17, 17, 0.8); border: 1px solid rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); }
-        .sidebar { width: 260px; border-right: 1px solid rgba(255, 255, 255, 0.05); }
-        .status-red { color: #ef4444; border-color: rgba(239, 68, 68, 0.2); background: rgba(239, 68, 68, 0.05); }
+        body { background-color: #020204; color: #f3f4f6; font-family: 'Inter', sans-serif; }
+        .glass-card { background: rgba(10, 10, 15, 0.9); border: 1px solid rgba(255, 255, 255, 0.03); }
+        
+        /* Categories */
+        .cat-critical { border-left: 4px solid #ef4444; }
+        .cat-suspicious { border-left: 4px solid #f59e0b; }
+        .cat-warning { border-left: 4px solid #3b82f6; }
+        
+        .badge-critical { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+        .badge-suspicious { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+        .badge-warning { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
     </style>
 </head>
 <body class="flex h-screen overflow-hidden">
 
-    <aside class="sidebar flex flex-col p-6 space-y-8">
-        <div class="text-xl font-bold tracking-tighter text-purple-500">REVENGE ADMIN</div>
-        <nav class="flex-1 space-y-2">
-            <a href="#" class="flex items-center space-x-3 p-3 bg-purple-600/10 text-purple-500 rounded-xl"><i class="fa fa-th-large"></i> <span>Detecciones</span></a>
-            <a href="#" class="flex items-center space-x-3 p-3 hover:bg-white/5 rounded-xl text-gray-400 transition"><i class="fa fa-shield-halved"></i> <span>Integridad</span></a>
-            <a href="#" class="flex items-center space-x-3 p-3 hover:bg-white/5 rounded-xl text-gray-400 transition"><i class="fa fa-users"></i> <span>Usuarios</span></a>
+    <aside class="w-64 border-r border-white/5 flex flex-col p-6">
+        <div class="text-xl font-black text-purple-500 mb-10">REVENGE CORE</div>
+        <nav class="space-y-2">
+            <div class="text-[10px] text-gray-500 font-bold uppercase mb-2 px-3">Main Menu</div>
+            <a href="#" class="flex items-center space-x-3 p-3 bg-white/5 rounded-xl text-white"><i class="fa fa-terminal"></i> <span>Live Logs</span></a>
+            <a href="#" class="flex items-center space-x-3 p-3 text-gray-400 hover:bg-white/5 rounded-xl transition"><i class="fa fa-user-secret"></i> <span>Staff View</span></a>
         </nav>
     </aside>
 
-    <main class="flex-1 overflow-y-auto p-8">
-        <header class="flex justify-between items-center mb-10">
-            <h1 class="text-2xl font-semibold">Registros de detecciones</h1>
-            <div class="flex items-center space-x-4">
-                <span class="text-sm text-gray-500">Sesión: Admin_Staff</span>
-                <div class="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center"><i class="fa fa-user"></i></div>
+    <main class="flex-1 overflow-y-auto p-10">
+        <div class="flex justify-between items-end mb-12">
+            <div>
+                <p class="text-sm text-gray-500 uppercase font-bold tracking-widest">Global Overview</p>
+                <h1 class="text-3xl font-bold">Detection Logs</h1>
             </div>
-        </header>
+            <div class="bg-white/5 px-4 py-2 rounded-lg text-xs font-mono border border-white/5">
+                STATUS: <span class="text-green-500">SYSTEMS_ONLINE</span>
+            </div>
+        </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div id="logs-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             
-            <div class="glass-card p-6 rounded-2xl border-l-4 border-l-red-600 relative overflow-hidden">
-                <div class="flex justify-between items-start mb-4">
-                    <div class="bg-red-500/10 p-2 rounded-lg"><i class="fa fa-triangle-exclamation text-red-500"></i></div>
-                    <span class="text-[10px] font-bold text-red-500 uppercase tracking-widest">Boot Instance</span>
+            <div class="glass-card p-6 rounded-2xl cat-critical">
+                <div class="flex justify-between items-start mb-6">
+                    <div class="badge-critical px-2 py-1 rounded text-[10px] font-bold uppercase tracking-tighter">Critical</div>
+                    <span class="text-[10px] text-gray-600 font-mono">ID: #8821</span>
                 </div>
-                <h3 class="text-lg font-bold mb-1">Recycle Bin Modified</h3>
-                <p class="text-sm text-gray-400 mb-4">User: <b>WANTEDBYFEDERALS</b></p>
-                <div class="bg-black/40 p-3 rounded-lg border border-white/5 text-xs font-mono text-gray-300">
-                    Papelera modificada hace 5 min
+                <h3 class="text-lg font-bold">Critical Service Stopped</h3>
+                <p class="text-xs text-red-500 font-medium mb-4 italic">Service Stopped: DPS</p>
+                <div class="text-[11px] text-gray-500 mt-auto pt-4 border-t border-white/5">
+                    <i class="fa fa-clock mr-1"></i> Detected at: 14:18:22
                 </div>
-                <div class="mt-4 text-[10px] text-gray-600 uppercase">Detectado a las: 14:20:05</div>
             </div>
 
-            <div class="glass-card p-6 rounded-2xl border-l-4 border-l-orange-500 relative overflow-hidden">
-                <div class="flex justify-between items-start mb-4">
-                    <div class="bg-orange-500/10 p-2 rounded-lg"><i class="fa fa-server text-orange-500"></i></div>
-                    <span class="text-[10px] font-bold text-orange-500 uppercase tracking-widest">System Warning</span>
+            <div class="glass-card p-6 rounded-2xl cat-suspicious">
+                <div class="flex justify-between items-start mb-6">
+                    <div class="badge-suspicious px-2 py-1 rounded text-[10px] font-bold uppercase tracking-tighter">Suspicious</div>
+                    <span class="text-[10px] text-gray-600 font-mono">ID: #8822</span>
                 </div>
-                <h3 class="text-lg font-bold mb-1">Critical Service Stopped</h3>
-                <p class="text-sm text-gray-400 mb-4">User: <b>Kev_Player</b></p>
-                <div class="bg-black/40 p-3 rounded-lg border border-white/5 text-xs font-mono text-gray-300">
-                    Service Stopped: DPS, DiagTrack
+                <h3 class="text-lg font-bold">Recycle Bin Modified</h3>
+                <p class="text-xs text-orange-400 font-medium mb-4 italic">Modified within: 5 min</p>
+                <div class="text-[11px] text-gray-500 mt-auto pt-4 border-t border-white/5">
+                    <i class="fa fa-clock mr-1"></i> Detected at: 14:20:05
                 </div>
-                <div class="mt-4 text-[10px] text-gray-600 uppercase">Detectado a las: 14:18:22</div>
+            </div>
+
+            <div class="glass-card p-6 rounded-2xl cat-warning">
+                <div class="flex justify-between items-start mb-6">
+                    <div class="badge-warning px-2 py-1 rounded text-[10px] font-bold uppercase tracking-tighter">Warning</div>
+                    <span class="text-[10px] text-gray-600 font-mono">ID: #8823</span>
+                </div>
+                <h3 class="text-lg font-bold">Manual Mapped Driver</h3>
+                <p class="text-xs text-blue-400 font-medium mb-4 italic">Device\PhysicalMemory access</p>
+                <div class="text-[11px] text-gray-500 mt-auto pt-4 border-t border-white/5">
+                    <i class="fa fa-clock mr-1"></i> Detected at: 14:21:10
+                </div>
             </div>
 
         </div>
     </main>
-
 </body>
 </html>
