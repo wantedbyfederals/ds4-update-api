@@ -81,5 +81,37 @@
 
         </div>
     </main>
+    <script>
+const DB_URL = "https://revengescanner-default-rtdb.firebaseio.com/pins";
+
+async function generatePIN() {
+    // 1. Crear un PIN de 6 dígitos
+    const pin = Math.floor(100000 + Math.random() * 900000).toString();
+    const staffName = "Admin_Kev"; // Esto lo podrías cambiar luego
+    
+    const pinData = {
+        status: "pending",
+        staff: staffName,
+        timestamp: new Date().toISOString(),
+        detections: []
+    };
+
+    try {
+        // 2. Enviar a Firebase usando una petición PUT
+        const response = await fetch(`${DB_URL}/${pin}.json`, {
+            method: 'PUT',
+            body: JSON.stringify(pinData)
+        });
+
+        if (response.ok) {
+            alert("PIN Generated: " + pin);
+            // Aquí podrías recargar una tabla para ver el PIN en la lista
+            location.reload(); 
+        }
+    } catch (error) {
+        console.error("Error generating PIN:", error);
+    }
+}
+</script>
 </body>
 </html>
