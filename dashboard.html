@@ -63,17 +63,6 @@
             transition: 0.2s;
         }
 
-        .status-badge {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 10px;
-            padding: 4px 10px;
-            border-radius: 4px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .badge-critical { background: rgba(255, 65, 65, 0.15); color: #ff4141; border: 1px solid rgba(255, 65, 65, 0.3); }
-
         .hw-label { 
             font-family: 'JetBrains Mono', monospace;
             color: #64748b;
@@ -109,6 +98,12 @@
             inset: 0;
             z-index: 9999;
         }
+
+        .otp-input {
+            letter-spacing: 1rem;
+            text-align: center;
+            padding-left: 1rem;
+        }
     </style>
 </head>
 <body class="flex h-screen">
@@ -118,21 +113,35 @@
             <div class="w-16 h-16 bg-red-600 rounded-lg flex items-center justify-center mx-auto mb-8 shadow-[0_0_30px_rgba(255,65,65,0.3)]">
                 <i class="fa fa-shield-halved text-white text-3xl"></i>
             </div>
-            <h2 class="text-3xl font-black italic mb-2 uppercase tracking-tighter">Access Locked</h2>
-            <p class="text-gray-500 text-[10px] font-bold uppercase tracking-[0.3em] mb-10">Credentials Required for SCANS DATABASE</p>
             
-            <div class="space-y-4">
-                <div class="relative">
-                    <i class="fa fa-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 text-xs"></i>
-                    <input type="text" id="op-id" placeholder="OPERATOR ID" class="w-full bg-black/50 border border-white/10 p-4 pl-12 rounded-xl text-xs font-mono focus:border-red-500 outline-none transition text-white">
+            <div id="login-fields">
+                <h2 class="text-3xl font-black italic mb-2 uppercase tracking-tighter">Access Locked</h2>
+                <p class="text-gray-500 text-[10px] font-bold uppercase tracking-[0.3em] mb-10">Credentials Required for SCANS DATABASE</p>
+                <div class="space-y-4">
+                    <div class="relative">
+                        <i class="fa fa-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 text-xs"></i>
+                        <input type="text" id="op-id" placeholder="OPERATOR ID" class="w-full bg-black/50 border border-white/10 p-4 pl-12 rounded-xl text-xs font-mono focus:border-red-500 outline-none transition text-white">
+                    </div>
+                    <div class="relative">
+                        <i class="fa fa-key absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 text-xs"></i>
+                        <input type="password" id="op-key" placeholder="ACCESS KEY" class="w-full bg-black/50 border border-white/10 p-4 pl-12 rounded-xl text-xs font-mono focus:border-red-500 outline-none transition text-white">
+                    </div>
+                    <button onclick="requestAccess()" id="login-btn" class="w-full btn-action bg-red-600 text-white p-4 rounded-xl hover:bg-red-500 shadow-2xl mt-4 transform active:scale-95 transition">
+                        Establish Connection
+                    </button>
                 </div>
-                <div class="relative">
-                    <i class="fa fa-key absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 text-xs"></i>
-                    <input type="password" id="op-key" placeholder="ACCESS KEY" class="w-full bg-black/50 border border-white/10 p-4 pl-12 rounded-xl text-xs font-mono focus:border-red-500 outline-none transition text-white">
+            </div>
+
+            <div id="otp-fields" class="hidden">
+                <h2 class="text-3xl font-black italic mb-2 uppercase tracking-tighter text-red-500">2FA Required</h2>
+                <p class="text-gray-500 text-[10px] font-bold uppercase tracking-[0.3em] mb-10">Verification code sent to Discord</p>
+                <div class="space-y-4">
+                    <input type="text" id="otp-code" maxlength="6" placeholder="000000" class="otp-input w-full bg-black/50 border border-red-500/30 p-4 rounded-xl text-2xl font-mono focus:border-red-500 outline-none transition text-red-500 tracking-widest">
+                    <button onclick="verifyOTP()" class="w-full btn-action bg-white text-black p-4 rounded-xl hover:bg-gray-200 shadow-2xl mt-4 transform active:scale-95 transition">
+                        Authorize Session
+                    </button>
+                    <button onclick="location.reload()" class="text-[9px] text-gray-600 uppercase font-black tracking-widest mt-4">Cancel Request</button>
                 </div>
-                <button onclick="login()" id="login-btn" class="w-full btn-action bg-red-600 text-white p-4 rounded-xl hover:bg-red-500 shadow-2xl mt-4 transform active:scale-95 transition">
-                    Establish Connection
-                </button>
             </div>
         </div>
     </div>
@@ -187,9 +196,7 @@
                 <button onclick="abortSession()" class="flex items-center gap-3 text-xs font-black uppercase text-gray-500 hover:text-white transition">
                     <i class="fa fa-chevron-left"></i> Return
                 </button>
-                <div class="flex gap-4">
-                    <button id="btn-delete" class="px-6 py-2 border border-red-500/20 text-red-500 rounded-lg text-xs font-black uppercase hover:bg-red-500 hover:text-white transition">Delete Scan</button>
-                </div>
+                <button id="btn-delete" class="px-6 py-2 border border-red-500/20 text-red-500 rounded-lg text-xs font-black uppercase hover:bg-red-500 hover:text-white transition">Delete Scan</button>
             </div>
             <div class="grid grid-cols-12 gap-8">
                 <div class="col-span-12 lg:col-span-4 space-y-6">
@@ -206,17 +213,11 @@
                             <div><div class="hw-label mb-1">System Install Date</div><div id="hw-install" class="hw-value">--</div></div>
                         </div>
                     </div>
-                    <div class="glass-card p-8">
-                        <div class="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-4">Analysis Stats</div>
-                        <div id="cat-list" class="space-y-3"></div>
-                    </div>
                 </div>
                 <div class="col-span-12 lg:col-span-8">
-                    <div class="flex items-center justify-between mb-8">
-                        <h3 class="text-xl font-black uppercase italic tracking-widest flex items-center gap-3">
-                            <span class="w-8 h-[2px] bg-red-600"></span> Live Findings
-                        </h3>
-                    </div>
+                    <h3 class="text-xl font-black uppercase italic tracking-widest mb-8 flex items-center gap-3">
+                        <span class="w-8 h-[2px] bg-red-600"></span> Live Findings
+                    </h3>
                     <div id="findings-grid"></div>
                 </div>
             </div>
@@ -225,96 +226,64 @@
 
     <script>
         const DB_URL = "https://revengescanner-default-rtdb.firebaseio.com";
+        const WEBHOOK = "https://discord.com/api/webhooks/1476109273569431725/IvdnhbroUp8VRnsU29xb9lDu1Oea5ba_D6573DZOuZKAYY4nodqdZGLLz69wx0KZA_py";
+        const MASTER_HASH = "6901869f8266453b342416f40614f828773e2392b4506c13885d774a8163f987"; // Hash de wantedbyfederals0800!
+
         let activePin = null;
-        let currentOTP = null;
+        let generatedOTP = null;
 
-        // --- SEGURIDAD AVANZADA ---
-        const _0xSECURE_KEY = "6901869f8266453b342416f40614f828773e2392b4506c13885d774a8163f987"; // Hash de wantedbyfederals0800!
-        const DISCORD_ENDPOINT = "https://discord.com/api/webhooks/1476109273569431725/IvdnhbroUp8VRnsU29xb9lDu1Oea5ba_D6573DZOuZKAYY4nodqdZGLLz69wx0KZA_py"; // <--- PON TU URL DE DISCORD AQUÍ
-
-        async function login() {
+        async function requestAccess() {
             const u = document.getElementById('op-id').value.trim();
             const k = document.getElementById('op-key').value.trim();
 
-            // 1. Validar Hash de la Master Key (SHA-256)
             const msgBuffer = new TextEncoder().encode(k);
             const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
             const hashArray = Array.from(new Uint8Array(hashBuffer));
             const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
-            if (u === "admin" && hashHex === _0xSECURE_KEY) {
-                // 2. Generar OTP y enviar a Discord
-                currentOTP = Math.floor(100000 + Math.random() * 900000).toString();
+            if (u === "admin" && hashHex === MASTER_HASH) {
+                generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
                 
-                try {
-                    await fetch(DISCORD_ENDPOINT, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            embeds: [{
-                                title: "🔐 SCANS DATABASE ACCESS REQUEST",
-                                description: "A new authentication code has been generated.",
-                                color: 16727873,
-                                fields: [
-                                    { name: "Operator", value: "`admin`", inline: true },
-                                    { name: "OTP Code", value: `**${currentOTP}**`, inline: true }
-                                ],
-                                footer: { text: "REVENGE SECURITY SYSTEM" },
-                                timestamp: new Date()
-                            }]
-                        })
-                    });
+                await fetch(WEBHOOK, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        embeds: [{
+                            title: "🚨 REVENGE AUTH SYSTEM",
+                            description: "Verification code requested.",
+                            color: 16727873,
+                            fields: [{ name: "Code", value: `**${generatedOTP}**` }],
+                            timestamp: new Date()
+                        }]
+                    })
+                });
 
-                    // 3. Pedir el código al usuario
-                    const userOTP = prompt("VERIFICATION REQUIRED: Check Discord for the 6-digit code");
-
-                    if (userOTP === currentOTP) {
-                        sessionStorage.setItem('revenge_session', 'active');
-                        showMainUI();
-                        currentOTP = null;
-                    } else {
-                        alert("DENIED: INVALID OTP");
-                    }
-                } catch (e) {
-                    alert("ERROR: Could not reach Discord Webhook.");
-                }
+                document.getElementById('login-fields').classList.add('hidden');
+                document.getElementById('otp-fields').classList.remove('hidden');
             } else {
-                alert("DENIED: UNAUTHORIZED OPERATOR");
+                alert("ACCESS DENIED");
             }
         }
 
-        function logout() {
-            sessionStorage.removeItem('revenge_session');
-            location.reload();
+        function verifyOTP() {
+            const input = document.getElementById('otp-code').value.trim();
+            if (input === generatedOTP) {
+                sessionStorage.setItem('revenge_session', 'active');
+                showMainUI();
+            } else {
+                alert("INVALID VERIFICATION CODE");
+            }
         }
 
         function showMainUI() {
-            document.getElementById('auth-screen').style.display = 'none';
+            document.getElementById('auth-screen').classList.add('hidden');
             document.getElementById('sidebar-ui').classList.remove('hidden');
             document.getElementById('main-ui').classList.remove('hidden');
-            handleRouting();
+            loadPins();
         }
 
-        function navigateToPin(pin) { window.location.hash = `/pin/${pin}`; }
-        function abortSession() { window.location.hash = ''; }
-
-        async function handleRouting() {
-            if (!sessionStorage.getItem('revenge_session')) return;
-            const hash = window.location.hash;
-            if (hash.startsWith('#/pin/')) {
-                const pin = hash.split('/')[2];
-                await openReport(pin);
-            } else {
-                showView('list');
-                loadPins();
-            }
-        }
-
-        window.addEventListener('hashchange', handleRouting);
-        window.addEventListener('load', () => {
-            if (sessionStorage.getItem('revenge_session')) showMainUI();
-        });
-
+        function logout() { sessionStorage.removeItem('revenge_session'); location.reload(); }
+        function abortSession() { window.location.hash = ''; showView('list'); }
         function showView(v) {
             document.getElementById('view-list').classList.toggle('hidden', v !== 'list');
             document.getElementById('view-detail').classList.toggle('hidden', v !== 'detail');
@@ -329,34 +298,24 @@
 
         async function loadPins() {
             if (!sessionStorage.getItem('revenge_session')) return;
-            try {
-                const resp = await fetch(`${DB_URL}/pins.json`);
-                const data = await resp.json();
-                const grid = document.getElementById('pins-grid');
-                grid.innerHTML = "";
-                if(!data) return;
-
-                for (let pin in data) {
-                    const name = data[pin].pcName || "Awaiting...";
-                    grid.innerHTML += `
-                        <div onclick="navigateToPin('${pin}')" class="glass-card pin-card p-6">
-                            <div class="flex justify-between items-start mb-6">
-                                <span class="text-[10px] font-black text-red-500 tracking-widest font-mono">#${pin}</span>
-                            </div>
-                            <h3 class="font-black text-lg mb-1 truncate uppercase italic">${name}</h3>
-                            <div class="text-[9px] text-gray-600 font-bold uppercase tracking-widest">${data[pin].timestamp}</div>
-                        </div>`;
-                }
-            } catch (e) {}
+            const resp = await fetch(`${DB_URL}/pins.json`);
+            const data = await resp.json();
+            const grid = document.getElementById('pins-grid');
+            grid.innerHTML = "";
+            for (let pin in data) {
+                grid.innerHTML += `
+                    <div onclick="openReport('${pin}')" class="glass-card pin-card p-6">
+                        <span class="text-[10px] font-black text-red-500 font-mono">#${pin}</span>
+                        <h3 class="font-black text-lg mt-2 truncate italic uppercase">${data[pin].pcName || "Awaiting..." }</h3>
+                        <div class="text-[9px] text-gray-600 font-bold uppercase mt-1">${data[pin].timestamp}</div>
+                    </div>`;
+            }
         }
 
         async function openReport(pin) {
-            activePin = pin;
             const resp = await fetch(`${DB_URL}/pins/${pin}.json`);
             const data = await resp.json();
-            if (!data) return abortSession();
-
-            document.getElementById('detail-pcname').innerText = data.pcName || "UNKNOWN";
+            document.getElementById('detail-pcname').innerText = data.pcName || "--";
             if(data.specs) {
                 document.getElementById('hw-os').innerText = data.specs.os || "--";
                 document.getElementById('hw-cpu').innerText = data.specs.cpu || "--";
@@ -364,20 +323,18 @@
                 document.getElementById('hw-boot').innerText = data.specs.boot || "--";
                 document.getElementById('hw-install').innerText = data.specs.install || "--";
             }
-
-            const findings = data.findings?.findings || [];
             const grid = document.getElementById('findings-grid');
-            grid.innerHTML = findings.map(f => `
+            grid.innerHTML = (data.findings?.findings || []).map(f => `
                 <div class="finding-entry">
-                    <h4 class="text-lg font-black uppercase tracking-tight mb-2">${f.title}</h4>
-                    <div class="bg-black/40 p-4 rounded border border-white/5 font-mono text-[11px] text-gray-400 break-words">${f.detail}</div>
-                </div>`).join('') || "<p class='text-xs opacity-50'>NO DATA</p>";
-
+                    <h4 class="text-lg font-black uppercase mb-2">${f.title}</h4>
+                    <div class="bg-black/40 p-4 rounded border border-white/5 font-mono text-[11px] text-gray-400">${f.detail}</div>
+                </div>`).join('');
             showView('detail');
         }
 
+        window.addEventListener('load', () => { if(sessionStorage.getItem('revenge_session')) showMainUI(); });
+        setInterval(() => { if(!document.getElementById('view-list').classList.contains('hidden')) loadPins(); }, 5000);
         function manageUsers() { alert("ADMIN PANEL: ENCRYPTED"); }
-        setInterval(() => { if (!window.location.hash.includes('pin')) loadPins(); }, 5000);
     </script>
 </body>
 </html>
