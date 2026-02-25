@@ -11,9 +11,30 @@
         body { background: var(--bg-deep); color: #e2e8f0; font-family: 'Inter', sans-serif; overflow: hidden; height: 100vh; }
         .sidebar { background: #050507; border-right: 1px solid var(--glass-border); width: 280px; }
         .glass-card { background: var(--panel-bg); border: 1px solid var(--glass-border); border-radius: 12px; }
-        .pin-card { cursor: pointer; transition: all 0.3s ease; background: linear-gradient(145deg, #0d0d10 0%, #0a0a0c 100%); border: 1px solid var(--glass-border); }
-        .pin-card:hover { border-color: var(--accent); transform: translateY(-2px); }
-        .finding-entry { background: #0f0f13; border-top: 3px solid var(--accent); border-radius: 8px; padding: 15px; height: 100%; display: flex; flex-direction: column; }
+        
+        /* Estilo restaurado de las tarjetas de la lista (Imagen 1) */
+        .pin-card { 
+            cursor: pointer; transition: all 0.3s ease; 
+            background: linear-gradient(145deg, #121217 0%, #0a0a0c 100%); 
+            border: 1px solid var(--glass-border);
+            position: relative;
+            overflow: hidden;
+        }
+        .pin-card::after {
+            content: ''; position: absolute; top: 0; right: 0;
+            width: 40px; height: 40px;
+            background: linear-gradient(45deg, transparent 50%, rgba(255,65,65,0.1) 50%);
+        }
+        .pin-card:hover { border-color: var(--accent); transform: scale(1.02); }
+
+        /* Rectángulos de hallazgos más grandes */
+        .finding-entry { 
+            background: #0f0f13; border-top: 4px solid var(--accent); 
+            border-radius: 8px; padding: 25px; height: 100%; 
+            display: flex; flex-direction: column; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        
         .hw-label { font-family: 'JetBrains Mono', monospace; color: #64748b; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
         .hw-value { color: #fff; font-weight: 700; font-size: 13px; margin-top: 2px; }
         .btn-action { font-weight: 900; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; transition: all 0.2s; }
@@ -48,7 +69,7 @@
         <div class="flex items-center gap-3 mb-16">
             <div class="w-10 h-10 bg-red-600 rounded flex items-center justify-center"><i class="fa fa-crosshairs text-white text-xl"></i></div>
             <div>
-                <div class="font-black text-xl tracking-tighter leading-none">REVENGE</div>
+                <div class="font-black text-xl tracking-tighter leading-none text-white">REVENGE</div>
                 <div class="text-[9px] text-gray-500 font-bold tracking-[0.2em] uppercase">ADMIN PANEL</div>
             </div>
         </div>
@@ -69,12 +90,12 @@
         <div id="view-list">
             <div class="flex justify-between items-center mb-12">
                 <div>
-                    <h1 class="text-4xl font-black italic tracking-tight uppercase">SCANS DATABASE</h1>
-                    <p class="text-gray-500 text-xs font-bold uppercase mt-2">Terminal Monitoring</p>
+                    <h1 class="text-4xl font-black italic tracking-tight uppercase text-white">SCANS DATABASE</h1>
+                    <p class="text-gray-500 text-xs font-bold uppercase mt-2">Real-time Terminal Monitoring</p>
                 </div>
                 <button onclick="generatePIN()" class="btn-action bg-white text-black px-8 py-4 rounded-xl hover:bg-red-600 hover:text-white shadow-2xl">GENERATE PIN</button>
             </div>
-            <div id="pins-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+            <div id="pins-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
         </div>
 
         <div id="view-detail" class="hidden">
@@ -101,7 +122,7 @@
             if (document.getElementById('op-id').value === "admin" && document.getElementById('op-key').value === "wantedbyfederals0800!" && document.getElementById('op-otp').value === activeOTP) {
                 localStorage.setItem('auth_status', 'granted');
                 showMainUI();
-            } else { alert("DENIED"); }
+            } else { alert("ACCESS DENIED: INVALID CREDENTIALS"); }
         }
 
         function showMainUI() {
@@ -117,7 +138,15 @@
             const grid = document.getElementById('pins-grid');
             grid.innerHTML = "";
             for (let pin in data) {
-                grid.innerHTML += `<div onclick="openReport('${pin}')" class="pin-card p-6 rounded-xl"><span class="text-[10px] font-bold text-red-500 font-mono">#${pin}</span><h3 class="font-black text-lg mt-2 italic uppercase truncate">${data[pin].pcName || "Awaiting..."}</h3><p class="text-[9px] text-gray-500 uppercase mt-1">${data[pin].timestamp}</p></div>`;
+                grid.innerHTML += `
+                <div onclick="openReport('${pin}')" class="pin-card p-8 rounded-xl border-l-4 border-l-red-600">
+                    <div class="flex justify-between items-start">
+                        <span class="text-[11px] font-bold text-red-500 font-mono tracking-widest">#${pin}</span>
+                        <div class="flex gap-1"><div class="w-1.5 h-1.5 rounded-full bg-red-600"></div><div class="w-1.5 h-1.5 rounded-full bg-red-600/20"></div></div>
+                    </div>
+                    <h3 class="font-black text-2xl mt-4 italic uppercase tracking-tighter text-white">${data[pin].pcName || "Awaiting..."}</h3>
+                    <p class="text-[10px] text-gray-500 font-bold uppercase mt-2 tracking-widest">${data[pin].timestamp}</p>
+                </div>`;
             }
         }
 
@@ -127,31 +156,33 @@
             const data = await res.json();
             const specs = data.specs || {};
             document.getElementById('report-content').innerHTML = `
-                <div class="col-span-12 lg:col-span-3 space-y-6">
-                    <div class="glass-card p-6 border border-white/5">
+                <div class="col-span-12 lg:col-span-4 space-y-6">
+                    <div class="glass-card p-8 border border-white/5">
                         <div class="hw-label mb-4 text-red-500 font-black">System Signature</div>
-                        <h2 class="text-2xl font-black mb-6 italic uppercase">${data.pcName || "UNKNOWN"}</h2>
-                        <div class="space-y-4">
-                            <div><div class="hw-label">OS</div><div class="hw-value">${specs.os || "--"}</div></div>
-                            <div><div class="hw-label">CPU</div><div class="hw-value">${specs.cpu || "--"}</div></div>
+                        <h2 class="text-3xl font-black mb-8 italic uppercase text-white">${data.pcName || "UNKNOWN"}</h2>
+                        <div class="space-y-6">
+                            <div><div class="hw-label">Operating System</div><div class="hw-value">${specs.os || "--"}</div></div>
+                            <div><div class="hw-label">Processor (CPU)</div><div class="hw-value">${specs.cpu || "--"}</div></div>
                             <div class="grid grid-cols-2 gap-4">
-                                <div><div class="hw-label">RAM</div><div class="hw-value">${specs.ram || "--"}</div></div>
-                                <div><div class="hw-label">UPTIME</div><div class="hw-value">${specs.boot || "--"}</div></div>
+                                <div><div class="hw-label">Physical RAM</div><div class="hw-value text-xl">${specs.ram || "--"}</div></div>
+                                <div><div class="hw-label">System Uptime</div><div class="hw-value text-xl">${specs.boot || "--"}</div></div>
                             </div>
-                            <div><div class="hw-label">INSTALL</div><div class="hw-value">${specs.install || "--"}</div></div>
+                            <div><div class="hw-label">Install Date</div><div class="hw-value">${specs.install || "--"}</div></div>
                         </div>
                     </div>
                 </div>
-                <div class="col-span-12 lg:col-span-9">
-                    <h3 class="text-xl font-black uppercase italic mb-6 flex items-center gap-3"><span class="w-8 h-[2px] bg-red-600"></span> Live Analysis Findings</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                <div class="col-span-12 lg:col-span-8">
+                    <h3 class="text-xl font-black uppercase italic mb-8 flex items-center gap-3 text-white"><span class="w-8 h-[2px] bg-red-600"></span> Live Analysis Findings</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         ${(data.findings?.findings || []).map(f => `
                         <div class="finding-entry">
-                            <div class="flex justify-between items-center mb-2">
-                                <h4 class="text-[10px] font-black uppercase tracking-tight text-white truncate pr-2">${f.title}</h4>
-                                <span class="text-[8px] bg-red-600/10 text-red-500 px-1.5 py-0.5 rounded font-bold">CRITICAL</span>
+                            <div class="flex justify-between items-start mb-4">
+                                <h4 class="text-sm font-black uppercase tracking-tight text-white leading-tight">${f.title}</h4>
+                                <span class="text-[9px] bg-red-600 text-white px-2 py-0.5 rounded font-black">CRITICAL</span>
                             </div>
-                            <div class="bg-black/40 p-3 rounded border border-white/5 font-mono text-[10px] text-gray-400 leading-tight flex-1">${f.detail}</div>
+                            <div class="bg-black/60 p-5 rounded border border-white/5 font-mono text-[11px] text-gray-400 leading-relaxed flex-1 italic">
+                                <span class="text-red-500/50 mr-2">></span>${f.detail}
+                            </div>
                         </div>`).join('') || '<p class="text-gray-600 font-bold uppercase text-xs">No threats detected.</p>'}
                     </div>
                 </div>`;
