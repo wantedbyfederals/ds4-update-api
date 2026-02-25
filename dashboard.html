@@ -251,6 +251,7 @@ const WEBHOOK = "https://discord.com/api/webhooks/1476109273569431725/IvdnhbroUp
 
 let activeOTP = null;
 let openPin = null;
+let currentFindings = [];
 
 function updateRoute(pinId = null) {
 const path = pinId ? `/dashboard/pins/${pinId}` : '/dashboard/scans';
@@ -334,9 +335,9 @@ ${data[pin].timestamp}
 }
 }
 
-function renderFindings(findings, filter) {
+function renderFindings(filter) {
 const container = document.getElementById('findings-grid');
-const filtered = (findings || []).filter(f => f.category === filter || (filter === 'Critical' && !f.category));
+const filtered = (currentFindings || []).filter(f => f.category === filter || (filter === 'Critical' && !f.category));
 
 if (filtered.length === 0) {
 container.innerHTML = `
@@ -384,12 +385,12 @@ const data = await res.json();
 if (!data) { abortSession(); return; }
 
 const specs = data.specs || {};
-const findings = data.findings?.findings || [];
+currentFindings = data.findings?.findings || [];
 
 const counts = {
-critical: findings.filter(f => !f.category || f.category === 'Critical').length,
-warning: findings.filter(f => f.category === 'Warning').length,
-unsigned: findings.filter(f => f.category === 'Unsigned Files').length
+critical: currentFindings.filter(f => !f.category || f.category === 'Critical').length,
+warning: currentFindings.filter(f => f.category === 'Warning').length,
+unsigned: currentFindings.filter(f => f.category === 'Unsigned Files').length
 };
 
 document.getElementById('report-content').innerHTML = `
@@ -424,23 +425,23 @@ ${data.pcName || "UNKNOWN"}
 <div class="glass-card p-6 border border-white/5">
 <div class="hw-label mb-6 text-gray-400 font-black tracking-widest">SECURITY CLASSIFICATIONS</div>
 <div id="cat-list" class="space-y-2">
-<div onclick="renderFindings(${JSON.stringify(findings)}, 'Critical')" class="cat-item active" id="cat-crit">
+<div onclick="renderFindings('Critical')" class="cat-item active" id="cat-crit">
 <div class="flex items-center gap-3">
 <i class="fa fa-biohazard text-red-500"></i>
 <span class="cat-name">Critical</span>
 </div>
 <span class="cat-badge text-red-500">${counts.critical}</span>
 </div>
-<div onclick="renderFindings(${JSON.stringify(findings)}, 'Warning')" class="cat-item" id="cat-warn">
+<div onclick="renderFindings('Warning')" class="cat-item" id="cat-warn">
 <div class="flex items-center gap-3">
 <i class="fa fa-triangle-exclamation text-orange-500"></i>
 <span class="cat-name">Warning</span>
 </div>
 <span class="cat-badge text-orange-500">${counts.warning}</span>
 </div>
-<div onclick="renderFindings(${JSON.stringify(findings)}, 'Unsigned Files')" class="cat-item" id="cat-unsigned">
+<div onclick="renderFindings('Unsigned Files')" class="cat-item" id="cat-unsigned">
 <div class="flex items-center gap-3">
-<i class="fa fa-file-shield text-purple-500"></i>
+<i class="fa fa-fingerprint text-purple-500"></i>
 <span class="cat-name">Unsigned Files</span>
 </div>
 <span class="cat-badge text-purple-500">${counts.unsigned}</span>
@@ -459,7 +460,7 @@ ${data.pcName || "UNKNOWN"}
 </div>
 `;
 
-renderFindings(findings, 'Critical');
+renderFindings('Critical');
 
 document.getElementById('view-list').classList.add('hidden');
 document.getElementById('view-detail').classList.remove('hidden');
