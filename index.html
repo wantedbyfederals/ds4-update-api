@@ -7,9 +7,9 @@
         :root {
             --bg: #020204;
             --accent: #a855f7;
-            --accent-glow: rgba(168, 85, 247, 0.3);
-            --glass: rgba(8, 8, 12, 0.95);
-            --border: rgba(168, 85, 247, 0.15);
+            --accent-glow: rgba(168, 85, 247, 0.4);
+            --glass: rgba(10, 10, 15, 0.92);
+            --border: rgba(168, 85, 247, 0.2);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
@@ -26,253 +26,173 @@
             position: relative;
         }
 
+        /* --- FONDO ULTRA-DINÁMICO --- */
         .drag-region {
             position: absolute;
-            top: 0; left: 0; width: 100%;
-            height: 80px;
-            z-index: 9999;
+            top: 0; left: 0; width: 100%; height: 80px;
+            z-index: 10000;
         }
 
-        .noise {
+        /* Efecto de Tunel / Vórtice */
+        .bg-vortex {
             position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: url('https://grainy-gradients.vercel.app/noise.svg');
-            opacity: 0.05;
-            pointer-events: none;
-            z-index: 2;
+            width: 150vmax; height: 150vmax;
+            background: repeating-conic-gradient(from 0deg, transparent 0deg 20deg, rgba(168, 85, 247, 0.03) 21deg 22deg);
+            animation: vortexRotate 60s linear infinite;
+            z-index: -2;
+        }
+
+        @keyframes vortexRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
 
         .scanlines {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to bottom, rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
+            background: linear-gradient(to bottom, transparent 50%, rgba(0, 0, 0, 0.3) 50%);
             background-size: 100% 4px;
-            z-index: 3;
+            z-index: 5;
             pointer-events: none;
+            opacity: 0.4;
         }
 
-        .space-bg {
+        /* HUD Decorativo */
+        .hud-frame {
             position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1;
-            background: radial-gradient(circle at 50% 50%, #0d0616 0%, #020204 100%);
-        }
-
-        .grid {
-            position: absolute;
-            width: 200%; height: 200%;
-            background-image: 
-                linear-gradient(var(--border) 1px, transparent 1px),
-                linear-gradient(90deg, var(--border) 1px, transparent 1px);
-            background-size: 60px 60px;
-            transform: perspective(500px) rotateX(60deg) translateY(-10%);
-            opacity: 0.2;
-            animation: moveGrid 20s linear infinite;
-        }
-
-        @keyframes moveGrid {
-            0% { transform: perspective(500px) rotateX(60deg) translateY(0); }
-            100% { transform: perspective(500px) rotateX(60deg) translateY(60px); }
-        }
-
-        .nebula {
-            position: absolute;
-            width: 1000px; height: 1000px;
-            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
-            filter: blur(80px);
-            opacity: 0.2;
-            animation: drift 20s infinite alternate;
-        }
-
-        @keyframes drift {
-            from { transform: translate(-10%, -10%) scale(1); }
-            to { transform: translate(10%, 10%) scale(1.2); }
-        }
-
-        .hud-corner {
-            position: absolute;
-            width: 100px; height: 100px;
-            border: 1px solid var(--border);
+            top: 20px; left: 20px; right: 20px; bottom: 20px;
+            border: 1px solid rgba(168, 85, 247, 0.1);
+            pointer-events: none;
             z-index: 1;
-            opacity: 0.5;
-        }
-        .top-left { top: 40px; left: 40px; border-right: none; border-bottom: none; }
-        .top-right { top: 40px; right: 40px; border-left: none; border-bottom: none; }
-        .bottom-left { bottom: 40px; left: 40px; border-right: none; border-top: none; }
-        .bottom-right { bottom: 40px; right: 40px; border-left: none; border-top: none; }
-
-        .data-stream {
-            position: absolute;
-            font-family: monospace;
-            font-size: 10px;
-            color: var(--accent);
-            opacity: 0.1;
-            white-space: nowrap;
-            writing-mode: vertical-rl;
-            top: 0;
-            animation: fall 10s linear infinite;
         }
 
-        @keyframes fall {
-            from { transform: translateY(-100%); }
-            to { transform: translateY(100vh); }
-        }
-
+        /* --- CARDS --- */
         .card {
             background: var(--glass);
             backdrop-filter: blur(40px);
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 30px;
-            padding: 60px;
+            border: 1px solid var(--border);
+            border-radius: 35px;
+            padding: 50px;
             text-align: center;
-            box-shadow: 0 0 50px rgba(0,0,0,1), inset 0 0 20px rgba(168, 85, 247, 0.05);
+            box-shadow: 0 0 80px rgba(0,0,0,0.8), inset 0 0 30px rgba(168, 85, 247, 0.05);
             z-index: 10;
-            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            top: -1px; left: -1px; right: -1px; bottom: -1px;
-            border-radius: 30px;
-            background: linear-gradient(45deg, transparent, var(--border), transparent);
-            z-index: -1;
+            transition: all 0.5s ease;
         }
 
         #login-view { width: 420px; }
-        h1 { font-size: 28px; font-weight: 900; letter-spacing: -1px; margin-bottom: 8px; text-transform: uppercase; }
-        .desc { color: #4b5563; font-size: 12px; margin-bottom: 35px; letter-spacing: 1px; }
+        #scanner-view { display: none; width: 600px; opacity: 0; transform: scale(0.95); }
+
+        h1 { font-size: 26px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 5px; }
+        .desc { color: #6b7280; font-size: 11px; letter-spacing: 1px; margin-bottom: 30px; text-transform: uppercase; }
 
         input {
-            width: 100%;
-            padding: 18px;
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            color: white;
-            font-size: 14px;
-            margin-bottom: 15px;
-            transition: 0.3s;
+            width: 100%; padding: 16px; margin-bottom: 15px;
+            background: rgba(0,0,0,0.5); border: 1px solid var(--border);
+            border-radius: 12px; color: white; transition: 0.3s;
         }
-
-        input:focus { outline: none; border-color: var(--accent); background: rgba(168, 85, 247, 0.05); }
+        input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
 
         .btn-primary {
-            width: 100%;
-            padding: 18px;
-            background: var(--accent);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 13px;
-            font-weight: 800;
-            cursor: pointer;
+            width: 100%; padding: 18px;
+            background: var(--accent); color: white;
+            border: none; border-radius: 12px;
+            font-weight: 900; cursor: pointer;
+            text-transform: uppercase; letter-spacing: 2px;
+            box-shadow: 0 4px 15px var(--accent-glow);
             transition: 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            box-shadow: 0 0 20px var(--accent-glow);
         }
+        .btn-primary:hover { transform: translateY(-2px); filter: brightness(1.2); }
 
-        .btn-primary:hover { transform: scale(1.02); filter: brightness(1.2); }
-
-        /* SCANNER SPECIFIC */
-        #scanner-view { display: none; width: 650px; opacity: 0; transform: scale(0.95); }
-
-        .radar-container {
+        /* --- RADAR ANIMADO (CORREGIDO) --- */
+        .radar-box {
             width: 200px; height: 200px;
             margin: 0 auto 30px;
+            position: relative;
             border-radius: 50%;
-            background: radial-gradient(circle, rgba(168, 85, 247, 0.1) 0%, transparent 70%);
-            padding: 10px;
-            border: 1px double var(--border);
+            border: 1px solid var(--border);
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.1) 0%, transparent 80%);
+            overflow: hidden;
         }
 
-        .status-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; }
-        .status-item { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 12px; border: 1px solid var(--border); text-align: left; }
-        .status-item span { display: block; color: #4b5563; font-size: 9px; font-weight: 800; }
-        .status-item p { color: var(--accent); font-weight: 700; font-size: 13px; margin-top: 4px; }
+        .radar-sweep {
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 100%; height: 100%;
+            background: conic-gradient(from 0deg, var(--accent) 0%, transparent 30%);
+            transform-origin: top left;
+            animation: sweepRotate 3s linear infinite; /* ¡Aquí está la magia! */
+            opacity: 0.6;
+        }
 
-        #scan-progress-area { display: none; margin-top: 20px; }
-        .progress-container { width: 100%; height: 6px; background: #000; border-radius: 10px; overflow: hidden; margin-bottom: 10px; border: 1px solid var(--border); }
-        .progress-fill { height: 100%; width: 0%; background: var(--accent); box-shadow: 0 0 15px var(--accent); }
-        .scan-status-text { font-family: monospace; font-size: 10px; color: var(--accent); display: flex; justify-content: space-between; }
+        @keyframes sweepRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
 
-        .deco-text { font-family: monospace; font-size: 9px; color: #374151; margin-top: 30px; letter-spacing: 3px; }
+        .radar-grid {
+            position: absolute;
+            width: 100%; height: 100%;
+            background-image: radial-gradient(circle, var(--border) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        /* Barra de carga */
+        #scan-progress-area { display: none; margin-top: 25px; }
+        .p-bar-bg { width: 100%; height: 4px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; }
+        .p-fill { height: 100%; width: 0%; background: var(--accent); box-shadow: 0 0 15px var(--accent); transition: width 0.1s; }
+        .p-info { display: flex; justify-content: space-between; font-family: monospace; font-size: 10px; color: var(--accent); margin-top: 8px; }
+
     </style>
 </head>
 <body>
 
     <div class="drag-region" onmousedown="handleDrag()"></div>
-    <div class="noise"></div>
     <div class="scanlines"></div>
-
-    <div class="hud-corner top-left"></div>
-    <div class="hud-corner top-right"></div>
-    <div class="hud-corner bottom-left"></div>
-    <div class="hud-corner bottom-right"></div>
-
-    <div class="data-stream" style="left: 10vw; animation-duration: 15s;">REVENGE_LOG_SCAN_INIT_MODULE_X86_64</div>
-    <div class="data-stream" style="right: 15vw; animation-duration: 12s;">ANTIBYPASS_ENABLED_SECURE_BOOT_V3</div>
-
-    <div class="space-bg">
-        <div class="grid"></div>
-        <div class="nebula" style="top: -200px; right: -200px;"></div>
-        <div class="nebula" style="bottom: -200px; left: -200px; background: rgba(59, 130, 246, 0.1);"></div>
-    </div>
+    <div class="hud-frame"></div>
+    <div class="bg-vortex"></div>
 
     <div id="login-view" class="card">
-        <h1>Revenge Login</h1>
-        <p class="desc">Encrypted Access Required</p>
+        <h1>Welcome</h1>
+        <p class="desc">Enter credentials to continue</p>
         <input type="text" id="user" placeholder="Username">
         <input type="password" id="pass" placeholder="Password">
-        <button class="btn-primary" onclick="validateLogin()">Authorize</button>
+        <button class="btn-primary" onclick="validateLogin()">Log In</button>
     </div>
 
     <div id="scanner-view" class="card">
-        <div class="radar-container">
-            <svg viewBox="0 0 200 200" style="filter: drop-shadow(0 0 5px var(--accent));">
-                <circle cx="100" cy="100" r="90" fill="none" stroke="var(--border)" stroke-width="1"/>
-                <circle cx="100" cy="100" r="60" fill="none" stroke="var(--border)" stroke-width="1"/>
-                <g style="transform-origin: 100px 100px; animation: rotate 4s linear infinite;">
-                    <path d="M 100 100 L 100 10 A 90 90 0 0 1 190 100 Z" fill="url(#grad)"/>
-                </g>
-                <defs>
-                    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" style="stop-color:var(--accent);stop-opacity:0.4" />
-                        <stop offset="100%" style="stop-color:var(--accent);stop-opacity:0" />
-                    </linearGradient>
-                </defs>
-            </svg>
+        <div class="radar-box">
+            <div class="radar-grid"></div>
+            <div class="radar-sweep"></div>
         </div>
 
         <h1>Revenge Scanner</h1>
         <p class="desc">The new Anti Cheating system</p>
 
-        <div class="status-grid">
-            <div class="status-item">
-                <span>VERSION</span>
-                <p>1.2.0-STABLE</p>
+        <div style="display: flex; gap: 15px; margin-bottom: 25px;">
+            <div style="flex:1; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 10px; border: 1px solid var(--border); text-align: left;">
+                <span style="font-size: 9px; color: #4b5563; font-weight: 800;">IDENTITY</span>
+                <p style="color: var(--accent); font-size: 12px; font-weight: 700;">WANTEDBYFEDERALS</p>
             </div>
-            <div class="status-item">
-                <span>IDENTITY</span>
-                <p>WANTEDBYFEDERALS</p>
+            <div style="flex:1; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 10px; border: 1px solid var(--border); text-align: left;">
+                <span style="font-size: 9px; color: #4b5563; font-weight: 800;">VERSION</span>
+                <p style="color: var(--accent); font-size: 12px; font-weight: 700;">1.2.0-STABLE</p>
             </div>
         </div>
 
         <button id="scan-btn" class="btn-primary" onclick="startScan()">Start Scan</button>
 
         <div id="scan-progress-area">
-            <div class="progress-container">
-                <div id="progress-bar" class="progress-fill"></div>
+            <div class="p-bar-bg">
+                <div id="progress-bar" class="p-fill"></div>
             </div>
-            <div class="scan-status-text">
-                <span id="scan-label">INITIALIZING...</span>
+            <div class="p-info">
+                <span id="scan-label">SYSTEM READY</span>
                 <span id="scan-percentage">0%</span>
             </div>
         </div>
         
-        <p class="deco-text">Revenge Team // Kev</p>
+        <p style="font-family: monospace; font-size: 8px; color: #374151; margin-top: 30px; letter-spacing: 4px;">REVENGE TEAM // KEV</p>
     </div>
 
     <script>
@@ -291,7 +211,7 @@
                 const scanner = document.getElementById('scanner-view');
 
                 login.style.opacity = "0";
-                login.style.transform = "translateY(20px) scale(0.9)";
+                login.style.transform = "scale(0.9)";
                 
                 setTimeout(() => {
                     login.style.display = "none";
@@ -300,7 +220,7 @@
                         scanner.style.opacity = "1";
                         scanner.style.transform = "scale(1)";
                     }, 50);
-                }, 600);
+                }, 500);
             }
         }
 
@@ -315,21 +235,21 @@
             progressArea.style.display = "block";
 
             let width = 0;
-            const states = ["MAPPING MEMORY...", "SCANNING STRINGS...", "CHECKING MODULES...", "CLEANING HANDLES...", "SCAN COMPLETED"];
+            const states = ["INITIALIZING...", "SCANNING RAM...", "CLEANING LOGS...", "DONE"];
             
             const interval = setInterval(() => {
                 if (width >= 100) {
                     clearInterval(interval);
-                    label.innerText = "NO THREATS DETECTED";
+                    label.innerText = "NO THREATS FOUND";
                     label.style.color = "#4ade80";
                     bar.style.background = "#4ade80";
                 } else {
                     width++;
                     bar.style.width = width + "%";
                     perc.innerText = width + "%";
-                    if(width % 25 === 0) label.innerText = states[width/25 - 1];
+                    if(width % 30 === 0) label.innerText = states[Math.floor(width/33)];
                 }
-            }, 60);
+            }, 50);
         }
     </script>
 </body>
