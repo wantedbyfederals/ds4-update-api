@@ -26,7 +26,6 @@
             position: relative;
         }
 
-        /* --- NUEVO FONDO INFORMÁTICO (MATRIX/GRID) --- */
         .background-container {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -35,7 +34,6 @@
             perspective: 1000px;
         }
 
-        /* Rejilla de perspectiva en el suelo */
         .cyber-grid {
             position: absolute;
             width: 200%; height: 200%;
@@ -54,7 +52,6 @@
             100% { transform: rotateX(60deg) translateY(60px); }
         }
 
-        /* Efecto de lluvia de bits (Sutil Matrix) */
         .data-rain {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -82,7 +79,6 @@
             z-index: -1;
         }
 
-        /* --- HUD & CARDS (IGUAL QUE TU DISEÑO ORIGINAL) --- */
         .drag-region {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 80px;
@@ -190,7 +186,7 @@
 
         #scan-progress-area { display: none; margin-top: 30px; }
         .p-container { width: 100%; height: 6px; background: rgba(255,255,255,0.03); border-radius: 10px; overflow: hidden; border: 1px solid rgba(168, 85, 247, 0.1); }
-        .p-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), #d8b4fe); box-shadow: 0 0 20px var(--accent); transition: width 0.1s; }
+        .p-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), #d8b4fe); box-shadow: 0 0 20px var(--accent); transition: width 0.1s, background 0.5s, box-shadow 0.5s; }
         .p-text { display: flex; justify-content: space-between; font-family: 'Fira Code', monospace; font-size: 10px; color: var(--accent); margin-top: 12px; font-weight: 700; }
 
         .footer-deco { font-family: monospace; font-size: 9px; color: #4b5563; margin-top: 40px; letter-spacing: 5px; opacity: 0.5; }
@@ -300,15 +296,15 @@
             setTimeout(() => { btn.style.display = "none"; progressArea.style.display = "block"; }, 300);
 
             let width = 0;
-            const states = ["MAPPING MODULES...", "CHECKING THREADS...", "SCANNING STRINGS...", "COMPLETED"];
+            const states = ["MAPPING MODULES...", "CHECKING RECYCLE BIN...", "SCANNING STRINGS...", "FINALIZING..."];
             
             const interval = setInterval(() => {
                 if (width >= 100) {
                     clearInterval(interval);
-                    label.innerText = "NO THREATS FOUND";
-                    label.style.color = "#4ade80";
-                    fill.style.background = "#4ade80";
-                    fill.style.boxShadow = "0 0 20px #4ade80";
+                    
+                    if (window.chrome && window.chrome.webview) {
+                        window.chrome.webview.postMessage({ command: "SCAN_RECYCLE_BIN" });
+                    }
                 } else {
                     width++;
                     fill.style.width = width + "%";
@@ -316,6 +312,32 @@
                     if(width % 25 === 0) label.innerText = states[width/25 - 1];
                 }
             }, 60);
+        }
+
+        if (window.chrome && window.chrome.webview) {
+            window.chrome.webview.addEventListener('message', event => {
+                const data = event.data;
+                if (data.type === "SCAN_RESULT") {
+                    showFinalResult(data.isSuspicious, data.message);
+                }
+            });
+        }
+
+        function showFinalResult(isSuspicious, message) {
+            const label = document.getElementById('p-label');
+            const fill = document.getElementById('p-fill');
+
+            if (isSuspicious) {
+                label.innerText = message;
+                label.style.color = "#ff4a4a";
+                fill.style.background = "#ff4a4a";
+                fill.style.boxShadow = "0 0 20px #ff4a4a";
+            } else {
+                label.innerText = "NO THREATS FOUND";
+                label.style.color = "#4ade80";
+                fill.style.background = "#4ade80";
+                fill.style.boxShadow = "0 0 20px #4ade80";
+            }
         }
     </script>
 </body>
