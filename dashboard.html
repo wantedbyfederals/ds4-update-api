@@ -8,7 +8,7 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;700;900&display=swap');
         :root { --bg-deep: #08080a; --panel-bg: #0d0d10; --accent: #ff4141; --glass-border: rgba(255, 255, 255, 0.05); }
-        body { background: var(--bg-deep); color: #e2e8f0; font-family: 'Inter', sans-serif; overflow: hidden; }
+        body { background: var(--bg-deep); color: #e2e8f0; font-family: 'Inter', sans-serif; overflow: hidden; height: 100vh; width: 100vw; }
         .sidebar { background: #050507; border-right: 1px solid var(--glass-border); width: 260px; }
         .glass-card { background: var(--panel-bg); border: 1px solid var(--glass-border); border-radius: 12px; transition: all 0.3s ease; }
         .pin-card { cursor: pointer; position: relative; overflow: hidden; background: linear-gradient(145deg, #0d0d10 0%, #0a0a0c 100%); }
@@ -16,13 +16,12 @@
         .finding-entry { background: #0f0f13; border-left: 4px solid var(--accent); border-radius: 4px 12px 12px 4px; padding: 20px; margin-bottom: 16px; }
         .hw-label { font-family: 'JetBrains Mono', monospace; color: #64748b; font-size: 11px; text-transform: uppercase; }
         .hw-value { color: #fff; font-weight: 700; font-size: 13px; }
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-thumb { background: #1a1a20; border-radius: 10px; }
         .btn-action { font-weight: 900; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; transition: all 0.2s; }
         #auth-screen { background: radial-gradient(circle at center, #1a1010 0%, #08080a 100%); display: flex; align-items: center; justify-content: center; position: fixed; inset: 0; z-index: 9999; }
+        .hidden { display: none !important; }
     </style>
 </head>
-<body class="flex h-screen">
+<body class="flex">
 
     <div id="auth-screen">
         <div class="w-full max-w-md p-10 glass-card border-red-500/20 text-center">
@@ -81,7 +80,7 @@
                     <h1 class="text-4xl font-black italic tracking-tight uppercase">SCANS DATABASE</h1>
                     <p class="text-gray-500 text-xs font-bold uppercase tracking-widest mt-2">Real-time terminal monitoring</p>
                 </div>
-                <button onclick="generatePIN()" class="btn-action bg-white text-black px-8 py-4 rounded-xl hover:bg-red-600 hover:text-white transform hover:-translate-y-1 shadow-2xl text-[10px]">GENERATE PIN</button>
+                <button onclick="generatePIN()" class="btn-action bg-white text-black px-8 py-4 rounded-xl hover:bg-red-600 hover:text-white transform hover:-translate-y-1 shadow-2xl">GENERATE PIN</button>
             </div>
             <div id="pins-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
         </div>
@@ -97,28 +96,17 @@
     <script>
         const DB_URL = "https://revengescanner-default-rtdb.firebaseio.com";
         const WEBHOOK = "https://discord.com/api/webhooks/1476109273569431725/IvdnhbroUp8VRnsU29xb9lDu1Oea5ba_D6573DZOuZKAYY4nodqdZGLLz69wx0KZA_py";
-        
         let activeOTP = null;
         let openPin = null;
 
         async function requestOTP() {
             activeOTP = Math.floor(100000 + Math.random() * 900000).toString();
-            try {
-                await fetch(WEBHOOK, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        embeds: [{ 
-                            title: "🔐 REVENGE AUTH SYSTEM", 
-                            description: "New access code generated for **SCANS DATABASE**.",
-                            fields: [{ name: "Verification Code", value: `**${activeOTP}**` }], 
-                            color: 16727873, 
-                            timestamp: new Date() 
-                        }] 
-                    })
-                });
-                alert("CODE SENT: Check your Discord channel.");
-            } catch (e) { alert("CONNECTION ERROR: Discord Webhook failed."); }
+            await fetch(WEBHOOK, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ embeds: [{ title: "🔐 REVENGE AUTH", fields: [{ name: "OTP CODE", value: `**${activeOTP}**` }], color: 16727873 }] })
+            });
+            alert("Code sent.");
         }
 
         function login() {
@@ -127,10 +115,10 @@
             const o = document.getElementById('op-otp').value.trim();
 
             if (u === "admin" && k === "wantedbyfederals0800!" && o === activeOTP) {
-                sessionStorage.setItem('revenge_session', 'active');
+                localStorage.setItem('auth_status', 'granted');
                 showMainUI();
             } else {
-                alert("DENIED: UNAUTHORIZED OR INVALID OTP");
+                alert("ACCESS DENIED");
             }
         }
 
@@ -142,12 +130,10 @@
         }
 
         async function loadPins() {
-            if (!sessionStorage.getItem('revenge_session')) return;
             const res = await fetch(`${DB_URL}/pins.json`);
             const data = await res.json();
             const grid = document.getElementById('pins-grid');
             grid.innerHTML = "";
-            if(!data) return;
             for (let pin in data) {
                 grid.innerHTML += `<div onclick="openReport('${pin}')" class="glass-card pin-card p-6"><span class="text-[10px] font-black text-red-500 font-mono">#${pin}</span><h3 class="font-black text-lg mt-2 truncate italic uppercase">${data[pin].pcName || "Awaiting..."}</h3><div class="text-[9px] text-gray-600 font-bold uppercase mt-1">${data[pin].timestamp}</div></div>`;
             }
@@ -159,41 +145,36 @@
             const data = await res.json();
             document.getElementById('report-content').innerHTML = `
                 <div class="col-span-12 lg:col-span-4 glass-card p-8">
-                    <div class="text-[10px] font-black text-red-500 uppercase mb-4">Hardware Signature</div>
                     <h2 class="text-3xl font-black mb-8 italic uppercase">${data.pcName || "UNKNOWN"}</h2>
                     <div class="space-y-6">
-                        <div><div class="hw-label mb-1">OS</div><div class="hw-value">${data.specs?.os || "--"}</div></div>
-                        <div><div class="hw-label mb-1">CPU</div><div class="hw-value">${data.specs?.cpu || "--"}</div></div>
-                        <div><div class="hw-label mb-1">RAM</div><div class="hw-value">${data.specs?.ram || "--"}</div></div>
+                        <div><div class="hw-label">OS</div><div class="hw-value">${data.specs?.os || "--"}</div></div>
+                        <div><div class="hw-label">CPU</div><div class="hw-value">${data.specs?.cpu || "--"}</div></div>
                     </div>
                 </div>
                 <div class="col-span-12 lg:col-span-8">
-                    <h3 class="text-xl font-black uppercase italic mb-8 flex items-center gap-3"><span class="w-8 h-[2px] bg-red-600"></span> Live Findings</h3>
-                    <div id="findings-list">${(data.findings?.findings || []).map(f => `<div class="finding-entry"><h4 class="text-lg font-black uppercase mb-2">${f.title}</h4><div class="bg-black/40 p-4 rounded border border-white/5 font-mono text-[11px] text-gray-400">${f.detail}</div></div>`).join('') || '<p class="text-xs text-gray-600">NO FINDINGS RECORDED</p>'}</div>
+                    <div id="findings-list">${(data.findings?.findings || []).map(f => `<div class="finding-entry"><h4 class="text-lg font-black uppercase">${f.title}</h4><div class="text-[11px] text-gray-400 font-mono">${f.detail}</div></div>`).join('')}</div>
                 </div>`;
             document.getElementById('view-list').classList.add('hidden');
             document.getElementById('view-detail').classList.remove('hidden');
         }
 
         async function deleteCurrentScan() {
-            if(!openPin) return;
-            if(confirm(`TERMINATE DATA FOR #${openPin}?`)) {
+            if(confirm('DELETE RECORD?')) {
                 await fetch(`${DB_URL}/pins/${openPin}.json`, { method: 'DELETE' });
                 abortSession();
                 loadPins();
             }
         }
 
-        function logout() { sessionStorage.removeItem('revenge_session'); location.reload(); }
-        function abortSession() { document.getElementById('view-list').classList.remove('hidden'); document.getElementById('view-detail').classList.add('hidden'); openPin = null; }
+        function logout() { localStorage.removeItem('auth_status'); location.reload(); }
+        function abortSession() { document.getElementById('view-list').classList.remove('hidden'); document.getElementById('view-detail').classList.add('hidden'); }
         async function generatePIN() {
             const pin = Math.floor(100000 + Math.random() * 900000).toString();
             await fetch(`${DB_URL}/pins/${pin}.json`, { method: 'PUT', body: JSON.stringify({ staff: "admin", timestamp: new Date().toLocaleString(), pcName: "INITIALIZING..." }) });
             loadPins();
         }
-        window.addEventListener('load', () => { if(sessionStorage.getItem('revenge_session')) showMainUI(); });
-        setInterval(() => { if(!document.getElementById('main-ui').classList.contains('hidden')) loadPins(); }, 5000);
-        function manageUsers() { alert("ADMIN PANEL: ENCRYPTED"); }
+        window.onload = () => { if(localStorage.getItem('auth_status') === 'granted') showMainUI(); };
+        function manageUsers() { alert("ENCRYPTED"); }
     </script>
 </body>
 </html>
