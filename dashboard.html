@@ -8,16 +8,18 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;700;900&display=swap');
         :root { --bg-deep: #08080a; --panel-bg: #0d0d10; --accent: #ff4141; --glass-border: rgba(255, 255, 255, 0.05); }
-        body { background: var(--bg-deep); color: #e2e8f0; font-family: 'Inter', sans-serif; overflow: hidden; height: 100vh; width: 100vw; }
-        .sidebar { background: #050507; border-right: 1px solid var(--glass-border); width: 260px; }
-        .glass-card { background: var(--panel-bg); border: 1px solid var(--glass-border); border-radius: 12px; transition: all 0.3s ease; }
-        .pin-card { cursor: pointer; position: relative; overflow: hidden; background: linear-gradient(145deg, #0d0d10 0%, #0a0a0c 100%); }
-        .pin-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 10px 30px -10px rgba(255, 65, 65, 0.2); }
-        .finding-entry { background: #0f0f13; border-left: 4px solid var(--accent); border-radius: 4px 12px 12px 4px; padding: 20px; margin-bottom: 16px; }
-        .hw-label { font-family: 'JetBrains Mono', monospace; color: #64748b; font-size: 11px; text-transform: uppercase; }
-        .hw-value { color: #fff; font-weight: 700; font-size: 13px; }
+        body { background: var(--bg-deep); color: #e2e8f0; font-family: 'Inter', sans-serif; overflow: hidden; height: 100vh; }
+        .sidebar { background: #050507; border-right: 1px solid var(--glass-border); width: 280px; }
+        .glass-card { background: var(--panel-bg); border: 1px solid var(--glass-border); border-radius: 12px; }
+        .pin-card { cursor: pointer; transition: all 0.3s ease; background: linear-gradient(145deg, #0d0d10 0%, #0a0a0c 100%); border: 1px solid var(--glass-border); }
+        .pin-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+        .finding-entry { background: #0f0f13; border-left: 4px solid var(--accent); border-radius: 4px 12px 12px 4px; padding: 20px; margin-bottom: 16px; border-right: 1px solid rgba(255,65,65,0.05); }
+        .hw-label { font-family: 'JetBrains Mono', monospace; color: #64748b; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
+        .hw-value { color: #fff; font-weight: 700; font-size: 13px; margin-top: 2px; }
         .btn-action { font-weight: 900; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; transition: all 0.2s; }
         #auth-screen { background: radial-gradient(circle at center, #1a1010 0%, #08080a 100%); display: flex; align-items: center; justify-content: center; position: fixed; inset: 0; z-index: 9999; }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: #1a1a20; border-radius: 10px; }
         .hidden { display: none !important; }
     </style>
 </head>
@@ -30,23 +32,13 @@
             </div>
             <h2 class="text-3xl font-black italic mb-2 uppercase tracking-tighter">Access Locked</h2>
             <p class="text-gray-500 text-[10px] font-bold uppercase tracking-[0.3em] mb-10">ADMIN PANEL Verification</p>
-            
             <div class="space-y-4">
-                <div class="relative">
-                    <i class="fa fa-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 text-xs"></i>
-                    <input type="text" id="op-id" placeholder="OPERATOR ID" class="w-full bg-black/50 border border-white/10 p-4 pl-12 rounded-xl text-xs font-mono focus:border-red-500 outline-none transition text-white">
-                </div>
-                <div class="relative">
-                    <i class="fa fa-key absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 text-xs"></i>
-                    <input type="password" id="op-key" placeholder="ACCESS KEY" class="w-full bg-black/50 border border-white/10 p-4 pl-12 rounded-xl text-xs font-mono focus:border-red-500 outline-none transition text-white">
-                </div>
-                <div class="relative">
-                    <i class="fa fa-fingerprint absolute left-4 top-1/2 -translate-y-1/2 text-red-600 text-xs"></i>
-                    <input type="text" id="op-otp" placeholder="DISCORD OTP" class="w-full bg-black/50 border border-red-500/20 p-4 pl-12 rounded-xl text-xs font-mono focus:border-red-500 outline-none transition text-red-500">
-                </div>
+                <input type="text" id="op-id" placeholder="OPERATOR ID" class="w-full bg-black/50 border border-white/10 p-4 rounded-xl text-xs font-mono focus:border-red-500 outline-none text-white">
+                <input type="password" id="op-key" placeholder="ACCESS KEY" class="w-full bg-black/50 border border-white/10 p-4 rounded-xl text-xs font-mono focus:border-red-500 outline-none text-white">
+                <input type="text" id="op-otp" placeholder="DISCORD OTP" class="w-full bg-black/50 border border-red-500/20 p-4 rounded-xl text-xs font-mono focus:border-red-500 outline-none text-red-500">
                 <div class="flex gap-2">
                     <button onclick="requestOTP()" class="w-1/3 btn-action bg-white/5 text-gray-400 p-4 rounded-xl hover:bg-white/10 text-[9px]">Send Code</button>
-                    <button onclick="login()" class="w-2/3 btn-action bg-red-600 text-white p-4 rounded-xl hover:bg-red-500 shadow-2xl transform active:scale-95 transition">Establish Connection</button>
+                    <button onclick="login()" class="w-2/3 btn-action bg-red-600 text-white p-4 rounded-xl hover:bg-red-500 shadow-2xl transition">Establish Connection</button>
                 </div>
             </div>
         </div>
@@ -64,12 +56,12 @@
             <button onclick="abortSession()" class="w-full flex items-center gap-4 px-4 py-3 rounded-xl bg-white/5 text-sm font-bold hover:bg-white/10 transition"><i class="fa fa-th-large text-red-500"></i> SCANS DATABASE</button>
             <button onclick="manageUsers()" class="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-gray-500 text-sm font-bold hover:bg-white/10 transition"><i class="fa fa-users-cog"></i> User Management</button>
         </nav>
-        <div class="mt-auto pt-8 border-t border-white/5 space-y-4">
-            <div class="flex items-center gap-3">
+        <div class="mt-auto pt-8 border-t border-white/5">
+            <div class="flex items-center gap-3 mb-4">
                 <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
                 <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Network Active</span>
             </div>
-            <button onclick="logout()" class="text-[9px] font-black text-gray-600 uppercase tracking-[0.2em] hover:text-red-500 transition">Terminate Session</button>
+            <button onclick="logout()" class="text-[9px] font-black text-gray-600 uppercase hover:text-red-500 transition">Terminate Session</button>
         </div>
     </aside>
 
@@ -78,16 +70,17 @@
             <div class="flex justify-between items-center mb-12">
                 <div>
                     <h1 class="text-4xl font-black italic tracking-tight uppercase">SCANS DATABASE</h1>
-                    <p class="text-gray-500 text-xs font-bold uppercase tracking-widest mt-2">Real-time terminal monitoring</p>
+                    <p class="text-gray-500 text-xs font-bold uppercase mt-2">Terminal Monitoring</p>
                 </div>
-                <button onclick="generatePIN()" class="btn-action bg-white text-black px-8 py-4 rounded-xl hover:bg-red-600 hover:text-white transform hover:-translate-y-1 shadow-2xl">GENERATE PIN</button>
+                <button onclick="generatePIN()" class="btn-action bg-white text-black px-8 py-4 rounded-xl hover:bg-red-600 hover:text-white shadow-2xl">GENERATE PIN</button>
             </div>
-            <div id="pins-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+            <div id="pins-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"></div>
         </div>
+
         <div id="view-detail" class="hidden">
             <div class="flex justify-between items-center mb-10">
                 <button onclick="abortSession()" class="flex items-center gap-3 text-xs font-black uppercase text-gray-500 hover:text-white transition"><i class="fa fa-chevron-left"></i> Return</button>
-                <button id="btn-delete" onclick="deleteCurrentScan()" class="px-6 py-2 border border-red-500/20 text-red-500 rounded-lg text-xs font-black uppercase hover:bg-red-500 hover:text-white transition">Delete Scan</button>
+                <button onclick="deleteCurrentScan()" class="px-6 py-2 border border-red-500/20 text-red-500 rounded-lg text-xs font-black uppercase hover:bg-red-500 hover:text-white transition">Delete Scan</button>
             </div>
             <div id="report-content" class="grid grid-cols-12 gap-8"></div>
         </div>
@@ -96,30 +89,19 @@
     <script>
         const DB_URL = "https://revengescanner-default-rtdb.firebaseio.com";
         const WEBHOOK = "https://discord.com/api/webhooks/1476109273569431725/IvdnhbroUp8VRnsU29xb9lDu1Oea5ba_D6573DZOuZKAYY4nodqdZGLLz69wx0KZA_py";
-        let activeOTP = null;
-        let openPin = null;
+        let activeOTP = null, openPin = null;
 
         async function requestOTP() {
             activeOTP = Math.floor(100000 + Math.random() * 900000).toString();
-            await fetch(WEBHOOK, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ embeds: [{ title: "🔐 REVENGE AUTH", fields: [{ name: "OTP CODE", value: `**${activeOTP}**` }], color: 16727873 }] })
-            });
+            await fetch(WEBHOOK, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({embeds:[{title:"🔐 REVENGE AUTH", fields:[{name:"OTP", value:`**${activeOTP}**`}], color:16727873}]}) });
             alert("Code sent.");
         }
 
         function login() {
-            const u = document.getElementById('op-id').value.trim();
-            const k = document.getElementById('op-key').value.trim();
-            const o = document.getElementById('op-otp').value.trim();
-
-            if (u === "admin" && k === "wantedbyfederals0800!" && o === activeOTP) {
+            if (document.getElementById('op-id').value === "admin" && document.getElementById('op-key').value === "wantedbyfederals0800!" && document.getElementById('op-otp').value === activeOTP) {
                 localStorage.setItem('auth_status', 'granted');
                 showMainUI();
-            } else {
-                alert("ACCESS DENIED");
-            }
+            } else { alert("DENIED"); }
         }
 
         function showMainUI() {
@@ -135,7 +117,7 @@
             const grid = document.getElementById('pins-grid');
             grid.innerHTML = "";
             for (let pin in data) {
-                grid.innerHTML += `<div onclick="openReport('${pin}')" class="glass-card pin-card p-6"><span class="text-[10px] font-black text-red-500 font-mono">#${pin}</span><h3 class="font-black text-lg mt-2 truncate italic uppercase">${data[pin].pcName || "Awaiting..."}</h3><div class="text-[9px] text-gray-600 font-bold uppercase mt-1">${data[pin].timestamp}</div></div>`;
+                grid.innerHTML += `<div onclick="openReport('${pin}')" class="pin-card p-6 rounded-xl"><span class="text-[10px] font-bold text-red-500 font-mono">#${pin}</span><h3 class="font-black text-lg mt-2 italic uppercase truncate">${data[pin].pcName || "Awaiting..."}</h3><p class="text-[9px] text-gray-500 uppercase mt-1">${data[pin].timestamp}</p></div>`;
             }
         }
 
@@ -143,37 +125,54 @@
             openPin = pin;
             const res = await fetch(`${DB_URL}/pins/${pin}.json`);
             const data = await res.json();
+            const specs = data.specs || {};
             document.getElementById('report-content').innerHTML = `
-                <div class="col-span-12 lg:col-span-4 glass-card p-8">
-                    <h2 class="text-3xl font-black mb-8 italic uppercase">${data.pcName || "UNKNOWN"}</h2>
-                    <div class="space-y-6">
-                        <div><div class="hw-label">OS</div><div class="hw-value">${data.specs?.os || "--"}</div></div>
-                        <div><div class="hw-label">CPU</div><div class="hw-value">${data.specs?.cpu || "--"}</div></div>
+                <div class="col-span-12 lg:col-span-4 space-y-6">
+                    <div class="glass-card p-8 border border-white/5">
+                        <div class="hw-label mb-4 text-red-500 font-black">System Signature</div>
+                        <h2 class="text-3xl font-black mb-8 italic uppercase">${data.pcName || "UNKNOWN"}</h2>
+                        <div class="grid grid-cols-1 gap-6">
+                            <div><div class="hw-label">Operating System</div><div class="hw-value">${specs.os || "--"}</div></div>
+                            <div><div class="hw-label">Processor (CPU)</div><div class="hw-value">${specs.cpu || "--"}</div></div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div><div class="hw-label">Physical RAM</div><div class="hw-value">${specs.ram || "--"}</div></div>
+                                <div><div class="hw-label">System Uptime</div><div class="hw-value">${specs.boot || "--"}</div></div>
+                            </div>
+                            <div><div class="hw-label">Install Date</div><div class="hw-value">${specs.install || "--"}</div></div>
+                        </div>
                     </div>
                 </div>
                 <div class="col-span-12 lg:col-span-8">
-                    <div id="findings-list">${(data.findings?.findings || []).map(f => `<div class="finding-entry"><h4 class="text-lg font-black uppercase">${f.title}</h4><div class="text-[11px] text-gray-400 font-mono">${f.detail}</div></div>`).join('')}</div>
+                    <h3 class="text-xl font-black uppercase italic mb-8 flex items-center gap-3"><span class="w-8 h-[2px] bg-red-600"></span> Live Analysis Findings</h3>
+                    <div id="findings-list">${(data.findings?.findings || []).map(f => `
+                        <div class="finding-entry">
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="text-lg font-black uppercase tracking-tight text-white">${f.title}</h4>
+                                <span class="text-[9px] bg-red-600/10 text-red-500 px-2 py-1 rounded font-bold">CRITICAL</span>
+                            </div>
+                            <div class="bg-black/40 p-4 rounded border border-white/5 font-mono text-[11px] text-gray-400 leading-relaxed">${f.detail}</div>
+                        </div>`).join('') || '<p class="text-gray-600 font-bold uppercase text-xs">No threats detected in this scan.</p>'}
+                    </div>
                 </div>`;
             document.getElementById('view-list').classList.add('hidden');
             document.getElementById('view-detail').classList.remove('hidden');
         }
 
         async function deleteCurrentScan() {
-            if(confirm('DELETE RECORD?')) {
+            if(confirm('DELETE RECORD PERMANENTLY?')) {
                 await fetch(`${DB_URL}/pins/${openPin}.json`, { method: 'DELETE' });
-                abortSession();
-                loadPins();
+                abortSession(); loadPins();
             }
         }
-
-        function logout() { localStorage.removeItem('auth_status'); location.reload(); }
         function abortSession() { document.getElementById('view-list').classList.remove('hidden'); document.getElementById('view-detail').classList.add('hidden'); }
+        function logout() { localStorage.removeItem('auth_status'); location.reload(); }
         async function generatePIN() {
             const pin = Math.floor(100000 + Math.random() * 900000).toString();
             await fetch(`${DB_URL}/pins/${pin}.json`, { method: 'PUT', body: JSON.stringify({ staff: "admin", timestamp: new Date().toLocaleString(), pcName: "INITIALIZING..." }) });
             loadPins();
         }
         window.onload = () => { if(localStorage.getItem('auth_status') === 'granted') showMainUI(); };
+        setInterval(() => { if(!document.getElementById('main-ui').classList.contains('hidden')) loadPins(); }, 5000);
         function manageUsers() { alert("ENCRYPTED"); }
     </script>
 </body>
