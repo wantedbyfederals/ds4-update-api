@@ -130,7 +130,7 @@
                     <i class="fa fa-key absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 text-xs"></i>
                     <input type="password" id="op-key" placeholder="ACCESS KEY" class="w-full bg-black/50 border border-white/10 p-4 pl-12 rounded-xl text-xs font-mono focus:border-red-500 outline-none transition text-white">
                 </div>
-                <button onclick="login()" class="w-full btn-action bg-red-600 text-white p-4 rounded-xl hover:bg-red-500 shadow-2xl mt-4 transform active:scale-95 transition">
+                <button onclick="login()" id="login-btn" class="w-full btn-action bg-red-600 text-white p-4 rounded-xl hover:bg-red-500 shadow-2xl mt-4 transform active:scale-95 transition">
                     Establish Connection
                 </button>
             </div>
@@ -224,30 +224,43 @@
     </main>
 
     <script>
-        // CONFIGURACIÓN CENTRAL
+        // REPARACIÓN DE LÓGICA - MANTENIENDO ESTRUCTURA ORIGINAL
         const DB_URL = "https://revengescanner-default-rtdb.firebaseio.com";
         let activePin = null;
 
-        // --- AUTENTICACIÓN MEJORADA (MANTENIENDO TU ESTILO) ---
         async function login() {
-            const user = document.getElementById('op-id').value.trim();
-            const key = document.getElementById('op-key').value.trim();
+            const userIn = document.getElementById('op-id').value.trim();
+            const keyIn = document.getElementById('op-key').value.trim();
+            const btn = document.getElementById('login-btn');
 
-            if(!user || !key) return alert("Credentials required.");
+            if(!userIn || !keyIn) { alert("ENTER CREDENTIALS"); return; }
+
+            btn.innerText = "CONNECTING...";
+            btn.disabled = true;
 
             try {
-                // Buscamos directamente el usuario para evitar errores de CORS masivos
-                const resp = await fetch(`${DB_URL}/operators/${user}.json`);
-                const data = await resp.json();
+                // REPARACIÓN: Fetch directo con validación forzada de JSON
+                const response = await fetch(`${DB_URL}/operators.json`, {
+                    method: 'GET',
+                    mode: 'cors',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                const operators = await response.json();
 
-                if (data && data.key === key) {
-                    localStorage.setItem('revenge_auth', user);
+                if (operators && operators[userIn] && operators[userIn].key === keyIn) {
+                    localStorage.setItem('revenge_auth', userIn);
                     showMainUI();
                 } else {
-                    alert("ACCESS DENIED: Critical authentication failure.");
+                    alert("DENIED: INVALID OPERATOR OR KEY");
+                    btn.innerText = "Establish Connection";
+                    btn.disabled = false;
                 }
-            } catch (err) {
-                alert("NETWORK ERROR: SCANS DATABASE unreachable.");
+            } catch (error) {
+                console.error(error);
+                alert("CONNECTION ERROR: DATABASE OFFLINE");
+                btn.innerText = "Establish Connection";
+                btn.disabled = false;
             }
         }
 
@@ -263,7 +276,6 @@
             handleRouting();
         }
 
-        // --- LÓGICA DE NAVEGACIÓN Y CARGA ---
         function navigateToPin(pin) { window.location.hash = `/pin/${pin}`; }
         function abortSession() { window.location.hash = ''; }
 
@@ -289,34 +301,35 @@
             document.getElementById('view-detail').classList.toggle('hidden', v !== 'detail');
         }
 
-        // --- INTERACCIÓN CON FIREBASE ---
         async function generatePIN() {
             const pin = Math.floor(100000 + Math.random() * 900000).toString();
             const operator = localStorage.getItem('revenge_auth');
-            const data = { staff: operator, timestamp: new Date().toLocaleString(), pcName: "WAITING_CONNECTION..." };
+            const data = { staff: operator, timestamp: new Date().toLocaleString(), pcName: "INITIALIZING..." };
             await fetch(`${DB_URL}/pins/${pin}.json`, { method: 'PUT', body: JSON.stringify(data) });
             loadPins();
         }
 
         async function loadPins() {
             if (!localStorage.getItem('revenge_auth')) return;
-            const resp = await fetch(`${DB_URL}/pins.json`);
-            const data = await resp.json();
-            const grid = document.getElementById('pins-grid');
-            grid.innerHTML = "";
-            if(!data) return;
+            try {
+                const resp = await fetch(`${DB_URL}/pins.json`);
+                const data = await resp.json();
+                const grid = document.getElementById('pins-grid');
+                grid.innerHTML = "";
+                if(!data) return;
 
-            for (let pin in data) {
-                const name = data[pin].pcName || "Awaiting...";
-                grid.innerHTML += `
-                    <div onclick="navigateToPin('${pin}')" class="glass-card pin-card p-6">
-                        <div class="flex justify-between items-start mb-6">
-                            <span class="text-[10px] font-black text-red-500 tracking-widest font-mono">#${pin}</span>
-                        </div>
-                        <h3 class="font-black text-lg mb-1 truncate uppercase italic">${name}</h3>
-                        <div class="text-[9px] text-gray-600 font-bold uppercase tracking-widest">${data[pin].timestamp}</div>
-                    </div>`;
-            }
+                for (let pin in data) {
+                    const name = data[pin].pcName || "Awaiting...";
+                    grid.innerHTML += `
+                        <div onclick="navigateToPin('${pin}')" class="glass-card pin-card p-6">
+                            <div class="flex justify-between items-start mb-6">
+                                <span class="text-[10px] font-black text-red-500 tracking-widest font-mono">#${pin}</span>
+                            </div>
+                            <h3 class="font-black text-lg mb-1 truncate uppercase italic">${name}</h3>
+                            <div class="text-[9px] text-gray-600 font-bold uppercase tracking-widest">${data[pin].timestamp}</div>
+                        </div>`;
+                }
+            } catch (e) {}
         }
 
         async function openReport(pin) {
@@ -326,8 +339,6 @@
             if (!data) return abortSession();
 
             document.getElementById('detail-pcname').innerText = data.pcName || "UNKNOWN";
-            
-            // Mapeo de specs
             if(data.specs) {
                 document.getElementById('hw-os').innerText = data.specs.os || "--";
                 document.getElementById('hw-cpu').innerText = data.specs.cpu || "--";
@@ -336,20 +347,18 @@
                 document.getElementById('hw-install').innerText = data.specs.install || "--";
             }
 
-            // Mapeo de hallazgos
             const findings = data.findings?.findings || [];
             const grid = document.getElementById('findings-grid');
             grid.innerHTML = findings.map(f => `
                 <div class="finding-entry">
                     <h4 class="text-lg font-black uppercase tracking-tight mb-2">${f.title}</h4>
                     <div class="bg-black/40 p-4 rounded border border-white/5 font-mono text-[11px] text-gray-400 break-words">${f.detail}</div>
-                </div>`).join('') || "No findings.";
+                </div>`).join('') || "<p class='text-xs opacity-50'>NO DATA</p>";
 
             showView('detail');
         }
 
-        function manageUsers() { alert("ADMIN PANEL: User Management encrypted."); }
-
+        function manageUsers() { alert("ADMIN PANEL: ENCRYPTED"); }
         setInterval(() => { if (!window.location.hash.includes('pin')) loadPins(); }, 5000);
     </script>
 </body>
