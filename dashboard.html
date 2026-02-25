@@ -70,8 +70,8 @@ transform: translateY(-3px);
 }
 
 #findings-container {
-height: 600px;
-max-height: 600px;
+height: 380px;
+max-height: 380px;
 overflow-y: auto;
 padding: 20px;
 padding-right: 10px;
@@ -80,14 +80,20 @@ border-radius: 12px;
 background: rgba(0,0,0,0.25);
 }
 
-#findings-container::-webkit-scrollbar {
+.recent-table-container {
+height: 250px;
+max-height: 250px;
+overflow-y: auto;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
 width: 6px;
 }
-#findings-container::-webkit-scrollbar-thumb {
+.custom-scrollbar::-webkit-scrollbar-thumb {
 background: var(--accent);
 border-radius: 10px;
 }
-#findings-container::-webkit-scrollbar-track {
+.custom-scrollbar::-webkit-scrollbar-track {
 background: #0a0a0d;
 }
 
@@ -167,6 +173,10 @@ z-index: 9999;
 ::-webkit-scrollbar-thumb { background: #1a1a20; border-radius: 10px; }
 
 .hidden { display: none !important; }
+
+.table-row-hover:hover {
+background: rgba(255, 65, 65, 0.05);
+}
 </style>
 </head>
 
@@ -218,7 +228,7 @@ z-index: 9999;
 </div>
 </aside>
 
-<main id="main-ui" class="flex-1 overflow-y-auto p-12 hidden">
+<main id="main-ui" class="flex-1 overflow-y-auto p-12 hidden custom-scrollbar">
 <div id="view-list">
 <div class="flex justify-between items-center mb-12">
 <div>
@@ -233,7 +243,7 @@ GENERATE PIN
 </div>
 
 <div id="view-detail" class="hidden">
-<div class="flex justify-between items-center mb-10">
+<div class="flex justify-between items-center mb-6">
 <button onclick="abortSession()" class="flex items-center gap-3 text-xs font-black uppercase text-gray-500 hover:text-white transition">
 <i class="fa fa-chevron-left"></i> Return
 </button>
@@ -341,9 +351,9 @@ const filtered = (currentFindings || []).filter(f => f.category === filter || (f
 
 if (filtered.length === 0) {
 container.innerHTML = `
-<div class="col-span-full py-24 flex flex-col items-center justify-center opacity-20 border-2 border-dashed border-white/5 rounded-2xl">
-<i class="fa fa-folder-open text-6xl mb-4"></i>
-<span class="text-xl font-black uppercase italic tracking-[0.3em]">No records found</span>
+<div class="col-span-full py-16 flex flex-col items-center justify-center opacity-20 border-2 border-dashed border-white/5 rounded-2xl">
+<i class="fa fa-folder-open text-4xl mb-4"></i>
+<span class="text-sm font-black uppercase italic tracking-[0.3em]">No records found</span>
 </div>`;
 return;
 }
@@ -376,6 +386,21 @@ container.innerHTML = filtered.map(f => {
 }).join('');
 }
 
+function filterRecentTable() {
+const input = document.getElementById('recent-search');
+const filter = input.value.toUpperCase();
+const rows = document.querySelectorAll('.recent-row');
+
+rows.forEach(row => {
+const text = row.textContent || row.innerText;
+if (text.toUpperCase().indexOf(filter) > -1) {
+row.style.display = "";
+} else {
+row.style.display = "none";
+}
+});
+}
+
 async function openReport(pin, push = true) {
 openPin = pin;
 if (push) updateRoute(pin);
@@ -386,6 +411,7 @@ if (!data) { abortSession(); return; }
 
 const specs = data.specs || {};
 currentFindings = data.findings?.findings || [];
+const recentData = data.recentActivity || [];
 
 const counts = {
 critical: currentFindings.filter(f => !f.category || f.category === 'Critical').length,
@@ -450,12 +476,56 @@ ${data.pcName || "UNKNOWN"}
 </div>
 </div>
 
-<div class="col-span-12 lg:col-span-8">
-<h3 class="text-xl font-black uppercase italic mb-8 flex items-center gap-3 text-white">
+<div class="col-span-12 lg:col-span-8 flex flex-col gap-6">
+<div>
+<h3 class="text-xl font-black uppercase italic mb-6 flex items-center gap-3 text-white">
 <span class="w-8 h-[2px] bg-red-600"></span> Live Analysis Findings
 </h3>
-<div id="findings-container">
-<div id="findings-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+<div id="findings-container" class="custom-scrollbar">
+<div id="findings-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4"></div>
+</div>
+</div>
+
+<div class="glass-card p-6 border border-white/5 mt-2">
+<div class="flex justify-between items-center mb-4">
+<h3 class="text-sm font-black uppercase italic flex items-center gap-3 text-red-500">
+<i class="fa fa-history"></i> Execution Timeline (UserAssist)
+</h3>
+<div class="relative w-64">
+<i class="fa fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-[10px]"></i>
+<input type="text" id="recent-search" onkeyup="filterRecentTable()" placeholder="SEARCH PROCESS OR PATH..." 
+class="w-full bg-black/40 border border-white/10 p-2 pl-8 rounded-lg text-[10px] font-mono outline-none focus:border-red-500 text-white transition-colors">
+</div>
+</div>
+<div class="recent-table-container custom-scrollbar pr-2">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr>
+<th class="px-4 py-3 text-[9px] text-gray-500 font-black uppercase tracking-[0.2em] border-b border-white/5">Process Name</th>
+<th class="px-4 py-3 text-[9px] text-gray-500 font-black uppercase tracking-[0.2em] border-b border-white/5">Source Path</th>
+<th class="px-4 py-3 text-[9px] text-gray-500 font-black uppercase tracking-[0.2em] border-b border-white/5 text-right">Last Execution</th>
+</tr>
+</thead>
+<tbody>
+${recentData.length > 0 ? recentData.map(app => `
+<tr class="recent-row table-row-hover border-b border-white/5 transition-colors">
+<td class="px-4 py-3">
+<div class="flex items-center gap-2">
+<i class="fa fa-terminal text-red-500/50 text-[10px]"></i>
+<span class="text-[11px] font-bold text-white">${app.name}</span>
+</div>
+</td>
+<td class="px-4 py-3 text-[10px] font-mono text-gray-400 italic break-all">${app.path}</td>
+<td class="px-4 py-3 text-right text-[10px] font-black text-red-400/80">${app.lastRun}</td>
+</tr>
+`).join('') : `
+<tr>
+<td colspan="3" class="px-4 py-8 text-center text-[10px] font-bold text-gray-600 uppercase tracking-widest">No recent execution data available</td>
+</tr>
+`}
+</tbody>
+</table>
+</div>
 </div>
 </div>
 `;
