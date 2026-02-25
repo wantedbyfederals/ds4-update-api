@@ -5,170 +5,101 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>REVENGE - ADMIN PANEL</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
         body {
-            background-color: #080808;
+            background-color: #050505;
             color: #ffffff;
             font-family: 'Inter', sans-serif;
             margin: 0;
-            padding: 0;
+            display: flex;
+            height: 100vh;
             overflow: hidden;
         }
 
         .sidebar {
-            width: 280px;
-            background-color: #080808;
-            border-right: 1px solid #151515;
-            height: 100vh;
+            width: 260px;
+            background-color: #050505;
+            border-right: 1px solid #111;
+            padding: 25px 20px;
             display: flex;
             flex-direction: column;
-            padding: 30px 20px;
-            position: fixed;
-            left: 0;
-            top: 0;
+            z-index: 50;
         }
 
-        .main-content {
-            margin-left: 280px;
+        .main-view {
+            flex: 1;
             padding: 40px 60px;
-            height: 100vh;
             overflow-y: auto;
+            position: relative;
         }
 
-        .logo-container {
+        .logo-box {
             display: flex;
             align-items: center;
             gap: 12px;
-            margin-bottom: 50px;
+            margin-bottom: 45px;
         }
 
-        .logo-icon {
-            background-color: #e63946;
-            width: 35px;
-            height: 35px;
-            border-radius: 6px;
+        .logo-square {
+            background-color: #ff2a2a;
+            width: 32px;
+            height: 32px;
+            border-radius: 5px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        .logo-text h1 {
-            font-weight: 900;
-            font-style: italic;
-            font-size: 22px;
-            line-height: 1;
-            letter-spacing: -0.5px;
-        }
-
-        .logo-text p {
-            font-size: 10px;
-            color: #666;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-top: 2px;
-        }
-
-        .nav-item {
+        .nav-btn {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
             padding: 12px 15px;
             border-radius: 8px;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .nav-item.active {
-            background-color: #121212;
-            border: 1px solid #1a1a1a;
-        }
-
-        .nav-item span {
-            font-size: 13px;
             font-weight: 700;
+            font-size: 13px;
             text-transform: uppercase;
             letter-spacing: -0.2px;
         }
 
-        .nav-item.inactive {
-            color: #555;
+        .nav-btn.active {
+            background-color: #121212;
+            border: 1px solid #1c1c1c;
+            color: #ffffff;
         }
 
-        .sidebar-footer {
-            margin-top: auto;
-            padding-bottom: 20px;
+        .nav-btn.inactive {
+            color: #444;
         }
 
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            background-color: #22c55e;
-            border-radius: 50%;
-            box-shadow: 0 0 10px #22c55e;
-        }
-
-        .header-actions {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 40px;
-        }
-
-        .btn-generate {
-            background-color: #ffffff;
-            color: #000000;
-            font-weight: 900;
-            font-size: 12px;
-            padding: 12px 25px;
-            border-radius: 8px;
-            text-transform: uppercase;
-            border: none;
-            cursor: pointer;
-        }
-
-        .data-grid {
-            display: grid;
-            grid-template-columns: 420px 1fr;
-            gap: 40px;
-        }
-
-        .info-panel {
-            background-color: #0d0d0d;
-            border: 1px solid #151515;
+        .system-card {
+            background-color: #0a0a0a;
+            border: 1px solid #111;
             border-radius: 12px;
-            padding: 35px;
-            margin-bottom: 30px;
-        }
-
-        .label-red {
-            color: #e63946;
-            font-size: 10px;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 15px;
-            display: block;
-        }
-
-        .system-name {
-            font-size: 38px;
-            font-weight: 900;
-            font-style: italic;
-            margin-bottom: 30px;
-        }
-
-        .spec-item {
+            padding: 30px;
             margin-bottom: 25px;
         }
 
+        .spec-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-top: 20px;
+        }
+
         .spec-label {
-            font-size: 9px;
-            color: #555;
-            text-transform: uppercase;
+            font-size: 10px;
+            color: #444;
             font-weight: 900;
-            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .spec-value {
@@ -176,257 +107,296 @@
             font-weight: 700;
         }
 
-        .security-row {
+        .security-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px;
-            background-color: #111111;
-            border-radius: 8px;
+            background-color: #0a0a0a;
+            border: 1px solid #111;
+            padding: 16px 20px;
+            border-radius: 10px;
             margin-bottom: 10px;
+            transition: border 0.2s;
         }
 
-        .security-label {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 12px;
-            font-weight: 800;
-            text-transform: uppercase;
+        .security-item:hover {
+            border-color: #1a1a1a;
         }
 
-        .security-count {
-            font-size: 12px;
-            font-weight: 800;
-            color: #444;
-        }
-
-        .count-active {
-            color: #e63946;
-            background-color: #251214;
-            padding: 4px 10px;
-            border-radius: 4px;
-        }
-
-        .analysis-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .analysis-line {
-            height: 1px;
-            width: 40px;
-            background-color: #e63946;
-        }
-
-        .analysis-title {
-            font-size: 24px;
-            font-weight: 900;
-            font-style: italic;
-            text-transform: uppercase;
-        }
-
-        .finding-card {
-            background-color: #0d0d0d;
-            border: 1px solid #151515;
-            border-left: 4px solid #e63946;
-            border-radius: 6px;
-            padding: 25px;
-            margin-bottom: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .finding-info h4 {
-            font-size: 18px;
-            font-weight: 900;
-            text-transform: uppercase;
-            margin-bottom: 5px;
-        }
-
-        .finding-info p {
-            font-size: 12px;
-            color: #666;
-        }
-
-        .finding-info span {
-            color: #aaa;
-            font-family: monospace;
-        }
-
-        .badge-critical {
-            background-color: #251214;
-            color: #e63946;
+        .status-pill {
             font-size: 10px;
             font-weight: 900;
             padding: 4px 12px;
             border-radius: 4px;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .finding-row {
+            background-color: #0a0a0a;
+            border: 1px solid #111;
+            border-left: 3px solid #ff2a2a;
+            border-radius: 4px;
+            padding: 22px 25px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .finding-text h4 {
+            font-size: 16px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: -0.3px;
+            margin-bottom: 6px;
+        }
+
+        .finding-text p {
+            font-size: 12px;
+            color: #555;
+            font-weight: 600;
+        }
+
+        .finding-text span {
+            color: #888;
+            font-family: monospace;
+            margin-left: 4px;
+        }
+
+        .badge-critical {
+            background-color: #1a0a0b;
+            color: #ff2a2a;
+            border: 1px solid #2a0f10;
+            font-size: 9px;
+            font-weight: 900;
+            padding: 3px 10px;
+            border-radius: 4px;
+        }
+
+        .btn-pin {
+            background-color: #ffffff;
+            color: #000000;
+            font-weight: 900;
+            font-size: 12px;
+            padding: 12px 28px;
+            border-radius: 8px;
+            text-transform: uppercase;
+            cursor: pointer;
+            border: none;
+            transition: transform 0.1s;
+        }
+
+        .btn-pin:active {
+            transform: scale(0.96);
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+        }
+
+        .network-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 10px;
+            font-weight: 900;
+            color: #444;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+
+        .dot {
+            width: 7px;
+            height: 7px;
+            background-color: #22c55e;
+            border-radius: 50%;
+            box-shadow: 0 0 8px rgba(34, 197, 94, 0.4);
+        }
+
+        .return-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #555;
+            font-size: 11px;
+            font-weight: 900;
+            text-transform: uppercase;
+            cursor: pointer;
+            margin-bottom: 30px;
         }
     </style>
 </head>
 <body>
 
-    <div class="sidebar">
-        <div class="logo-container">
-            <div class="logo-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 2L4.5 20.29L5.21 21L12 18L18.79 21L19.5 20.29L12 2Z"/></svg>
+    <aside class="sidebar">
+        <div class="logo-box">
+            <div class="logo-square">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 2L4.5 20.29L5.21 21L12 18L18.79 21L19.5 20.29L12 2Z"/></svg>
             </div>
-            <div class="logo-text">
-                <h1>REVENGE</h1>
-                <p>ADMIN PANEL</p>
+            <div>
+                <h1 class="text-xl font-black italic leading-none tracking-tighter">REVENGE</h1>
+                <p class="text-[9px] text-gray-600 font-bold tracking-[0.2em] mt-1">ADMIN PANEL</p>
             </div>
         </div>
 
         <nav>
-            <div class="nav-item active">
-                <span style="color: #e63946;">⊞</span>
+            <div class="nav-btn active">
+                <span class="text-red-500">⊞</span>
                 <span>SCANS DATABASE</span>
             </div>
-            <div class="nav-item inactive">
+            <div class="nav-btn inactive">
                 <span>👥</span>
                 <span>User Management</span>
             </div>
         </nav>
 
         <div class="sidebar-footer">
-            <div class="flex items-center gap-3 mb-4">
-                <div class="status-dot"></div>
-                <span class="text-[10px] font-black uppercase tracking-widest text-gray-400">NETWORK ACTIVE</span>
+            <div class="network-status">
+                <div class="dot"></div>
+                <span>NETWORK ACTIVE</span>
             </div>
-            <div class="text-[10px] font-black uppercase tracking-widest text-gray-600 hover:text-white cursor-pointer transition">
-                TERMINATE SESSION
-            </div>
+            <button class="text-[10px] font-black text-gray-700 hover:text-white transition uppercase tracking-widest">TERMINATE SESSION</button>
         </div>
-    </div>
+    </aside>
 
-    <div class="main-content">
-        <div class="header-actions">
-            <div class="flex items-center gap-2 text-gray-500 font-bold text-[10px] uppercase cursor-pointer hover:text-white">
-                <span>‹</span> RETURN
+    <main class="main-view">
+        <div class="flex justify-between items-start">
+            <div class="return-btn">
+                <span class="text-lg">‹</span> RETURN
             </div>
-            <button class="btn-generate">GENERATE PIN</button>
+            <button class="btn-pin">GENERATE PIN</button>
         </div>
 
-        <div class="data-grid">
-            <div>
-                <div class="info-panel">
-                    <span class="label-red">SYSTEM SIGNATURE</span>
-                    <h2 class="system-name">KERNELOS-PC</h2>
+        <div class="grid grid-cols-12 gap-10">
+            <div class="col-span-5">
+                <section class="system-card">
+                    <span class="text-[10px] text-red-500 font-black tracking-widest uppercase block mb-3">SYSTEM SIGNATURE</span>
+                    <h2 class="text-4xl font-black italic tracking-tighter mb-8">KERNELOS-PC</h2>
 
-                    <div class="spec-item">
-                        <p class="spec-label">OPERATING SYSTEM</p>
-                        <p class="spec-value">Windows 10 Pro</p>
-                    </div>
-
-                    <div class="spec-item">
-                        <p class="spec-label">PROCESSOR (CPU)</p>
-                        <p class="spec-value">Intel(R) Core(TM) i5-9400F CPU @ 2.90GHz</p>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="spec-item">
-                            <p class="spec-label">PHYSICAL RAM</p>
-                            <p class="spec-value">16 GB</p>
+                    <div class="space-y-6">
+                        <div>
+                            <p class="spec-label">💻 OPERATING SYSTEM</p>
+                            <p class="spec-value">Windows 10 Pro</p>
                         </div>
-                        <div class="spec-item">
-                            <p class="spec-label">SYSTEM UPTIME</p>
-                            <p class="spec-value">6 hours</p>
+                        <div>
+                            <p class="spec-label">⚙ PROCESSOR (CPU)</p>
+                            <p class="spec-value">Intel(R) Core(TM) i5-9400F CPU @ 2.90GHz</p>
+                        </div>
+                        <div class="spec-grid">
+                            <div>
+                                <p class="spec-label">📟 PHYSICAL RAM</p>
+                                <p class="spec-value">16 GB</p>
+                            </div>
+                            <div>
+                                <p class="spec-label">⏱ SYSTEM UPTIME</p>
+                                <p class="spec-value">6 hours</p>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="spec-label">🗓 INSTALL DATE</p>
+                            <p class="spec-value text-gray-500 tabular-nums">1771865827</p>
                         </div>
                     </div>
+                </section>
 
-                    <div class="spec-item">
-                        <p class="spec-label">INSTALL DATE</p>
-                        <p class="spec-value" style="color: #888; letter-spacing: 1px;">1771865827</p>
-                    </div>
-                </div>
-
-                <div class="info-panel">
-                    <p class="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-6">SECURITY CLASSIFICATIONS</p>
+                <div class="space-y-2">
+                    <p class="text-[10px] font-black text-gray-600 uppercase tracking-widest mb-4">SECURITY CLASSIFICATIONS</p>
                     
-                    <div class="security-row">
-                        <div class="security-label" style="color: #e63946;">☣ CRITICAL</div>
-                        <div class="security-count count-active">5</div>
+                    <div class="security-item">
+                        <div class="flex items-center gap-3 font-bold text-xs text-red-500">
+                            <span>☣</span> CRITICAL
+                        </div>
+                        <span class="status-pill bg-red-950/30 text-red-500">5</span>
                     </div>
 
-                    <div class="security-row">
-                        <div class="security-label" style="color: #f97316;">⚠ WARNING</div>
-                        <div class="security-count">0</div>
+                    <div class="security-item">
+                        <div class="flex items-center gap-3 font-bold text-xs text-orange-500">
+                            <span>⚠</span> WARNING
+                        </div>
+                        <span class="status-pill bg-orange-950/20 text-orange-700">0</span>
                     </div>
 
-                    <div class="security-row">
-                        <div class="security-label" style="color: #eab308;">👁 SUSPICIOUS</div>
-                        <div class="security-count">0</div>
+                    <div class="security-item">
+                        <div class="flex items-center gap-3 font-bold text-xs text-yellow-500">
+                            <span>👁</span> SUSPICIOUS
+                        </div>
+                        <span class="status-pill bg-yellow-950/20 text-yellow-700">0</span>
                     </div>
 
-                    <div class="security-row">
-                        <div class="security-label" style="color: #38bdf8;">🛡 ANTIVIRUS LOGS</div>
-                        <div class="security-count">0</div>
+                    <div class="security-item">
+                        <div class="flex items-center gap-3 font-bold text-xs text-blue-400">
+                            <span>🛡</span> ANTIVIRUS LOGS
+                        </div>
+                        <span class="status-pill bg-blue-950/20 text-blue-900">0</span>
                     </div>
 
-                    <div class="security-row">
-                        <div class="security-label" style="color: #94a3b8;">📝 UNSIGNED FILES</div>
-                        <div class="security-count">0</div>
+                    <div class="security-item">
+                        <div class="flex items-center gap-3 font-bold text-xs text-gray-400">
+                            <span>📝</span> UNSIGNED FILES
+                        </div>
+                        <span class="status-pill bg-gray-900 text-gray-700">0</span>
                     </div>
 
-                    <div class="security-row">
-                        <div class="security-label" style="color: #a78bfa;">💾 USB FILES</div>
-                        <div class="security-count">0</div>
+                    <div class="security-item">
+                        <div class="flex items-center gap-3 font-bold text-xs text-purple-400">
+                            <span>💾</span> USB FILES
+                        </div>
+                        <span class="status-pill bg-purple-950/20 text-purple-900">0</span>
                     </div>
                 </div>
             </div>
 
-            <div>
-                <div class="analysis-header">
-                    <div class="analysis-line"></div>
-                    <h3 class="analysis-title">LIVE ANALYSIS FINDINGS</h3>
+            <div class="col-span-7">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="h-[2px] w-8 bg-red-500"></div>
+                    <h3 class="text-2xl font-black italic uppercase italic tracking-tighter">LIVE ANALYSIS FINDINGS</h3>
                 </div>
 
-                <div class="finding-card">
-                    <div class="finding-info">
-                        <h4>CRITICAL SERVICE STOPPED</h4>
-                        <p>Service: <span>sysmain</span></p>
+                <div class="space-y-3">
+                    <div class="finding-row">
+                        <div class="finding-text">
+                            <h4>CRITICAL SERVICE STOPPED</h4>
+                            <p>Service: <span>sysmain</span></p>
+                        </div>
+                        <div class="badge-critical">CRITICAL</div>
                     </div>
-                    <div class="badge-critical">CRITICAL</div>
-                </div>
 
-                <div class="finding-card">
-                    <div class="finding-info">
-                        <h4>CRITICAL SERVICE STOPPED</h4>
-                        <p>Service: <span>DiagTrack</span></p>
+                    <div class="finding-row">
+                        <div class="finding-text">
+                            <h4>CRITICAL SERVICE STOPPED</h4>
+                            <p>Service: <span>DiagTrack</span></p>
+                        </div>
+                        <div class="badge-critical">CRITICAL</div>
                     </div>
-                    <div class="badge-critical">CRITICAL</div>
-                </div>
 
-                <div class="finding-card">
-                    <div class="finding-info">
-                        <h4>CRITICAL SERVICE STOPPED</h4>
-                        <p>Service: <span>pcasvc</span></p>
+                    <div class="finding-row">
+                        <div class="finding-text">
+                            <h4>CRITICAL SERVICE STOPPED</h4>
+                            <p>Service: <span>pcasvc</span></p>
+                        </div>
+                        <div class="badge-critical">CRITICAL</div>
                     </div>
-                    <div class="badge-critical">CRITICAL</div>
-                </div>
 
-                <div class="finding-card">
-                    <div class="finding-info">
-                        <h4>CRITICAL SERVICE STOPPED</h4>
-                        <p>Service: <span>sgrmbroker</span></p>
+                    <div class="finding-row">
+                        <div class="finding-text">
+                            <h4>CRITICAL SERVICE STOPPED</h4>
+                            <p>Service: <span>sgrmbroker</span></p>
+                        </div>
+                        <div class="badge-critical">CRITICAL</div>
                     </div>
-                    <div class="badge-critical">CRITICAL</div>
-                </div>
 
-                <div class="finding-card">
-                    <div class="finding-info">
-                        <h4>CRITICAL SERVICE STOPPED</h4>
-                        <p>Service: <span>cdpuser</span></p>
+                    <div class="finding-row">
+                        <div class="finding-text">
+                            <h4>CRITICAL SERVICE STOPPED</h4>
+                            <p>Service: <span>cdpuser</span></p>
+                        </div>
+                        <div class="badge-critical">CRITICAL</div>
                     </div>
-                    <div class="badge-critical">CRITICAL</div>
                 </div>
             </div>
         </div>
-    </div>
+    </main>
 
 </body>
 </html>
