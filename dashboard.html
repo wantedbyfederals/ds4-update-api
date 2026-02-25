@@ -2,45 +2,53 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>REVENGE Admin | Elite Dashboard</title>
+    <title>REVENGE | Elite System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-        body { background: #020204; color: #f3f4f6; font-family: 'Inter', sans-serif; overflow: hidden; }
-        .glass { background: rgba(10, 10, 15, 0.95); border: 1px solid rgba(255, 255, 255, 0.05); }
-        .sidebar { border-right: 1px solid rgba(255,255,255,0.05); width: 280px; }
+        body { background: #010103; color: #f3f4f6; font-family: 'Inter', sans-serif; overflow: hidden; }
+        .glass { background: rgba(15, 15, 20, 0.98); border: 1px solid rgba(255, 255, 255, 0.04); }
+        .sidebar { border-right: 1px solid rgba(255,255,255,0.03); width: 280px; }
         
-        /* Botón de Generar PIN con estilo Revenge */
         .btn-generate {
             background: #ffffff; color: #000; font-weight: 900; font-size: 11px;
-            letter-spacing: 1px; padding: 12px 24px; border-radius: 12px;
-            transition: 0.3s; text-transform: uppercase;
+            letter-spacing: 1px; padding: 12px 24px; border-radius: 8px;
+            transition: 0.2s; text-transform: uppercase;
         }
-        .btn-generate:hover { background: #a855f7; color: #fff; transform: translateY(-2px); }
+        .btn-generate:hover { background: #8b5cf6; color: #fff; transform: translateY(-2px); }
 
-        /* Tarjetas de PIN en la lista */
         .pin-card {
-            background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 24px; transition: 0.3s; cursor: pointer;
+            background: #060608; border: 1px solid rgba(255,255,255,0.03);
+            border-radius: 16px; transition: 0.2s; cursor: pointer; position: relative;
+            overflow: hidden;
         }
-        .pin-card:hover { background: rgba(255,255,255,0.05); border-color: rgba(168, 85, 247, 0.4); }
+        .pin-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%;
+            background: #8b5cf6; opacity: 0; transition: 0.2s;
+        }
+        .pin-card:hover { border-color: rgba(139, 92, 246, 0.4); }
+        .pin-card:hover::before { opacity: 1; }
 
-        /* Categorías Lateral */
         .cat-item {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 14px; border-radius: 12px; margin-bottom: 6px;
-            font-size: 12px; font-weight: 700; color: #94a3b8; transition: 0.2s;
+            padding: 14px; border-radius: 8px; margin-bottom: 4px;
+            font-size: 11px; font-weight: 900; color: #64748b; transition: 0.2s;
+            text-transform: uppercase; letter-spacing: 1px;
         }
-        .cat-item.active { background: rgba(255,255,255,0.05); color: #fff; }
-        .dot { height: 8px; width: 8px; border-radius: 50%; display: inline-block; margin-right: 8px; }
+        .cat-item.active { background: rgba(255,255,255,0.03); color: #fff; }
+        .dot { height: 6px; width: 6px; border-radius: 50%; display: inline-block; margin-right: 10px; }
 
-        /* Cuadrícula de Hallazgos */
         .finding-card {
-            background: #08080a; border: 1px solid rgba(255,255,255,0.04);
-            border-left: 4px solid #ef4444; border-radius: 14px;
+            background: #040406; border: 1px solid rgba(255,255,255,0.02);
+            border-left: 3px solid #ef4444; border-radius: 12px;
         }
-        .badge-instance { background: rgba(239, 68, 68, 0.1); color: #ef4444; font-size: 9px; font-weight: 900; padding: 3px 8px; border-radius: 5px; }
+        .badge-instance { background: rgba(239, 68, 68, 0.1); color: #ef4444; font-size: 9px; font-weight: 900; padding: 4px 8px; border-radius: 4px; }
+        
+        .hw-panel { background: #040406; border: 1px solid rgba(255,255,255,0.02); border-radius: 12px; padding: 16px; }
+        .hw-row { display: flex; justify-content: space-between; font-size: 10px; margin-bottom: 8px; font-family: monospace; }
+        .hw-label { color: #64748b; font-weight: bold; }
+        .hw-value { color: #fff; }
     </style>
 </head>
 <body class="flex h-screen">
@@ -49,56 +57,69 @@
         <div>
             <div class="text-purple-500 font-black italic text-3xl mb-12 tracking-tighter">REVENGE</div>
             <nav class="space-y-2">
-                <button onclick="showView('list')" class="w-full flex items-center gap-3 p-4 rounded-xl hover:bg-white/5 transition font-bold text-gray-400 hover:text-white">
-                    <i class="fa fa-history"></i> Recent Scans
+                <button onclick="showView('list')" class="w-full flex items-center gap-4 p-4 rounded-lg bg-white/5 font-bold text-white transition">
+                    <i class="fa fa-database"></i> Database
                 </button>
             </nav>
         </div>
-        <div class="text-[10px] text-gray-700 font-bold uppercase tracking-widest">v1.2.5 Premium Access</div>
+        <div>
+            <div class="flex items-center gap-2 mb-2">
+                <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                <span class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">System Online</span>
+            </div>
+            <div class="text-[9px] text-gray-700 font-bold uppercase tracking-widest">v2.0 Elite Protocol</div>
+        </div>
     </aside>
 
-    <main class="flex-1 p-12 overflow-y-auto">
-        
+    <main class="flex-1 p-12 overflow-y-auto relative">
         <div id="view-list">
             <div class="flex justify-between items-end mb-12">
                 <div>
-                    <h1 class="text-4xl font-black italic">Detection Logs</h1>
-                    <p class="text-gray-500 text-xs mt-2 font-bold uppercase tracking-widest">Central Database</p>
+                    <h1 class="text-4xl font-black italic tracking-tight">Active Sessions</h1>
+                    <p class="text-gray-500 text-[10px] mt-2 font-bold uppercase tracking-widest">Global Monitoring Network</p>
                 </div>
                 <button onclick="generatePIN()" class="btn-generate">
-                    <i class="fa fa-plus-circle mr-2"></i> Create Session
+                    Generate Access PIN
                 </button>
             </div>
-            <div id="pins-grid" class="grid grid-cols-3 gap-6"></div>
+            <div id="pins-grid" class="grid grid-cols-4 gap-5"></div>
         </div>
 
         <div id="view-detail" class="hidden">
             <div class="flex justify-between items-center mb-10">
-                <button onclick="showView('list')" class="text-xs font-black uppercase text-gray-500 hover:text-white transition flex items-center gap-2">
-                    <i class="fa fa-chevron-left"></i> Back to Archive
+                <button onclick="showView('list')" class="text-[10px] font-black uppercase text-gray-500 hover:text-white transition flex items-center gap-3">
+                    <i class="fa fa-arrow-left"></i> Return
                 </button>
-                <button id="btn-delete" class="text-red-500 border border-red-500/20 px-6 py-2 rounded-xl text-[10px] font-black uppercase hover:bg-red-500 hover:text-white transition">
-                    <i class="fa fa-trash-alt mr-2"></i> Destroy Record
+                <button id="btn-delete" class="text-red-500 border border-red-500/20 px-6 py-2 rounded-lg text-[10px] font-black uppercase hover:bg-red-500 hover:text-white transition">
+                    Purge Data
                 </button>
             </div>
 
             <div class="grid grid-cols-12 gap-8">
-                <div class="col-span-3">
-                    <div class="glass p-6 rounded-3xl">
-                        <h3 class="text-[10px] font-black uppercase text-gray-600 mb-6 tracking-widest">Filter results</h3>
-                        <div id="cat-list">
-                            </div>
+                <div class="col-span-3 space-y-6">
+                    <div class="glass p-6 rounded-2xl">
+                        <h3 class="text-[10px] font-black uppercase text-gray-600 mb-6 tracking-widest">Threat Analysis</h3>
+                        <div id="cat-list"></div>
+                    </div>
+
+                    <div class="glass p-6 rounded-2xl">
+                        <h3 class="text-[10px] font-black uppercase text-gray-600 mb-6 tracking-widest">Hardware Fingerprint</h3>
+                        <div class="hw-panel">
+                            <div class="hw-row"><span class="hw-label">OS:</span><span class="hw-value">Windows 11 Pro</span></div>
+                            <div class="hw-row"><span class="hw-label">CPU:</span><span class="hw-value">Intel Core i9</span></div>
+                            <div class="hw-row"><span class="hw-label">GPU:</span><span class="hw-value">NVIDIA RTX 4080</span></div>
+                            <div class="hw-row"><span class="hw-label">RAM:</span><span class="hw-value">32 GB</span></div>
+                        </div>
                     </div>
                 </div>
 
                 <div class="col-span-9">
                     <div class="flex items-center justify-between mb-8">
-                        <h2 class="text-xl font-black italic flex items-center gap-3">
-                            <i class="fa fa-bolt text-purple-500"></i> Analysis Results
+                        <h2 class="text-2xl font-black italic flex items-center gap-3 tracking-tight">
+                            <i class="fa fa-crosshairs text-purple-500"></i> Scan Findings
                         </h2>
                     </div>
-                    <div id="findings-grid" class="grid grid-cols-2 gap-4">
-                        </div>
+                    <div id="findings-grid" class="grid grid-cols-2 gap-5"></div>
                 </div>
             </div>
         </div>
@@ -113,16 +134,15 @@
             document.getElementById('view-detail').classList.toggle('hidden', v !== 'detail');
         }
 
-        // GENERAR PIN (Reintegrado)
         async function generatePIN() {
             const pin = Math.floor(100000 + Math.random() * 900000).toString();
-            const data = { staff: "Admin_Elite", timestamp: new Date().toLocaleString(), findings: { findings: [] } };
+            const data = { staff: "System_Auth", timestamp: new Date().toLocaleString(), findings: { findings: [] } };
             await fetch(`${DB_URL}/${pin}.json`, { method: 'PUT', body: JSON.stringify(data) });
             loadPins();
         }
 
         async function deleteScan() {
-            if(!activePin || !confirm("¿Eliminar permanentemente?")) return;
+            if(!activePin) return;
             await fetch(`${DB_URL}/${activePin}.json`, { method: 'DELETE' });
             showView('list');
             loadPins();
@@ -135,32 +155,34 @@
             const data = await resp.json();
             const findings = data.findings?.findings || [];
 
-            // Categorías lateral
             const cats = ["Critical", "Warning", "Suspicious"];
             const counts = { Critical: 0, Warning: 0, Suspicious: 0 };
-            findings.forEach(f => counts[f.category]++);
+            findings.forEach(f => { if(counts[f.category] !== undefined) counts[f.category]++; });
 
             document.getElementById('cat-list').innerHTML = cats.map(c => `
-                <div class="cat-item ${counts[c] > 0 ? 'active' : 'opacity-30'}">
-                    <span><span class="dot" style="background: ${c==='Critical'?'#ef4444':'#3b82f6'}"></span> ${c}</span>
-                    <span class="bg-black/50 px-2 py-1 rounded text-[10px]">${counts[c]}</span>
+                <div class="cat-item ${counts[c] > 0 ? 'active' : 'opacity-40'}">
+                    <span><span class="dot" style="background: ${c==='Critical'?'#ef4444':'#8b5cf6'}"></span> ${c}</span>
+                    <span class="bg-black/80 px-2 py-1 rounded text-[10px] text-white border border-white/5">${counts[c]}</span>
                 </div>
             `).join('');
 
-            // Grid Horizontal
             const grid = document.getElementById('findings-grid');
-            grid.innerHTML = findings.map(f => `
-                <div class="finding-card p-6">
-                    <div class="flex justify-between mb-4">
-                        <i class="fa fa-skull-crossbones text-red-500"></i>
-                        <span class="badge-instance uppercase">Live analysis</span>
+            if (findings.length === 0) {
+                grid.innerHTML = `<div class="col-span-2 text-center text-gray-600 font-bold text-xs py-10 uppercase tracking-widest">No anomalies detected</div>`;
+            } else {
+                grid.innerHTML = findings.map(f => `
+                    <div class="finding-card p-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <i class="fa fa-shield-virus text-red-500 text-lg"></i>
+                            <span class="badge-instance uppercase">Boot Sector</span>
+                        </div>
+                        <h4 class="font-black text-sm mb-3 uppercase tracking-tight text-white">${f.title}</h4>
+                        <p class="bg-black p-4 rounded-lg border border-white/5 font-mono text-[10px] text-gray-400 leading-relaxed break-words">
+                            ${f.detail}
+                        </p>
                     </div>
-                    <h4 class="font-black text-sm mb-2 uppercase tracking-tight">${f.title}</h4>
-                    <p class="bg-black/40 p-4 rounded-xl border border-white/5 font-mono text-[10px] text-gray-500 leading-relaxed">
-                        ${f.detail}
-                    </p>
-                </div>
-            `).join('');
+                `).join('');
+            }
 
             showView('detail');
         }
@@ -173,9 +195,12 @@
             for (let pin in data) {
                 grid.innerHTML += `
                     <div onclick="openReport('${pin}')" class="pin-card p-8">
-                        <div class="text-[10px] font-black text-purple-500 mb-6 uppercase tracking-widest">Session ID: #${pin}</div>
-                        <div class="text-2xl font-black italic mb-2">${data[pin].staff || 'Anonymous'}</div>
-                        <div class="text-[10px] text-gray-600 font-bold uppercase">${data[pin].timestamp}</div>
+                        <div class="flex justify-between items-start mb-6">
+                            <div class="text-[10px] font-black text-purple-500 uppercase tracking-widest">ID: #${pin}</div>
+                            <div class="w-2 h-2 rounded-full bg-red-500"></div>
+                        </div>
+                        <div class="text-xl font-black italic mb-1 text-white">${data[pin].staff || 'Unverified'}</div>
+                        <div class="text-[9px] text-gray-600 font-bold uppercase tracking-widest">${data[pin].timestamp}</div>
                     </div>`;
             }
         }
