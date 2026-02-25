@@ -25,9 +25,15 @@
             border-radius: 4px; padding: 12px;
             display: flex; flex-direction: column; justify-content: space-between;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            height: 100%;
         }
         
+        /* Contenedor con Scroll Propio */
+        #findings-container {
+            height: calc(100vh - 250px); /* Ajuste para que sea más grande */
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
         .hw-label { font-family: 'JetBrains Mono', monospace; color: #64748b; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; }
         .hw-value { color: #fff; font-weight: 700; font-size: 13px; margin-top: 3px; }
         
@@ -116,6 +122,20 @@
         const DB_URL = "https://revengescanner-default-rtdb.firebaseio.com", WEBHOOK = "https://discord.com/api/webhooks/1476109273569431725/IvdnhbroUp8VRnsU29xb9lDu1Oea5ba_D6573DZOuZKAYY4nodqdZGLLz69wx0KZA_py";
         let activeOTP = null, openPin = null;
 
+        /* SISTEMA DE RUTAS */
+        function updateRoute(pinId = null) {
+            const path = pinId ? `/dashboard/pins/${pinId}` : '/dashboard/scans';
+            window.history.pushState({ pinId }, '', path);
+        }
+
+        window.onpopstate = (event) => {
+            if (event.state && event.state.pinId) {
+                openReport(event.state.pinId, false);
+            } else {
+                abortSession(false);
+            }
+        };
+
         async function requestOTP() {
             activeOTP = Math.floor(100000 + Math.random() * 900000).toString();
             await fetch(WEBHOOK, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({embeds:[{title:"🔐 REVENGE AUTH", fields:[{name:"OTP", value:`**${activeOTP}**`}], color:16727873}]}) });
@@ -132,7 +152,14 @@
             document.getElementById('auth-screen').classList.add('hidden');
             document.getElementById('sidebar-ui').classList.remove('hidden');
             document.getElementById('main-ui').classList.remove('hidden');
-            loadPins();
+            
+            const urlParams = window.location.pathname.split('/');
+            const pinIndex = urlParams.indexOf('pins');
+            if (pinIndex !== -1 && urlParams[pinIndex + 1]) {
+                openReport(urlParams[pinIndex + 1], false);
+            } else {
+                loadPins();
+            }
         }
 
         async function loadPins() {
@@ -173,9 +200,14 @@
                 </div>`).join('');
         }
 
-        async function openReport(pin) {
-            openPin = pin; const res = await fetch(`${DB_URL}/pins/${pin}.json`), data = await res.json(), specs = data.specs || {}, findings = data.findings?.findings || [];
+        async function openReport(pin, push = true) {
+            openPin = pin; 
+            if(push) updateRoute(pin);
             
+            const res = await fetch(`${DB_URL}/pins/${pin}.json`), data = await res.json();
+            if(!data) { abortSession(); return; }
+            
+            const specs = data.specs || {}, findings = data.findings?.findings || [];
             const counts = {
                 critical: findings.filter(f => !f.category || f.category === 'Critical').length,
                 warning: findings.filter(f => f.category === 'Warning').length,
@@ -194,45 +226,19 @@
                                 <div><div class="hw-label"><i class="fa fa-memory text-green-400"></i> Physical RAM</div><div class="hw-value">${specs.ram || "--"}</div></div>
                                 <div><div class="hw-label"><i class="fa fa-clock text-yellow-400"></i> System Uptime</div><div class="hw-value">${specs.boot || "--"}</div></div>
                             </div>
-                            <div><div class="hw-label"><i class="fa fa-calendar-alt text-purple-400"></i> Install Date</div><div class="hw-value">${specs.install || "--"}</div></div>
                         </div>
                     </div>
 
                     <div class="glass-card p-6 border border-white/5">
                         <div class="hw-label mb-6 text-gray-400 font-black tracking-widest">SECURITY CLASSIFICATIONS</div>
-                        <div id="cat-list">
+                        <div id="cat-list" class="space-y-2">
                             <div onclick="renderFindings(JSON.parse('${JSON.stringify(findings).replace(/'/g, "\\'")}'), 'Critical')" class="cat-item active">
-                                <div class="flex items-center gap-3">
-                                    <i class="fa fa-biohazard text-red-500"></i>
-                                    <span class="cat-name">Critical</span>
-                                </div>
+                                <div class="flex items-center gap-3"><i class="fa fa-biohazard text-red-500"></i><span class="cat-name">Critical</span></div>
                                 <span class="cat-badge text-red-500">${counts.critical}</span>
                             </div>
                             <div onclick="renderFindings(JSON.parse('${JSON.stringify(findings).replace(/'/g, "\\'")}'), 'Warning')" class="cat-item">
-                                <div class="flex items-center gap-3">
-                                    <i class="fa fa-triangle-exclamation text-orange-500"></i>
-                                    <span class="cat-name">Warning</span>
-                                </div>
+                                <div class="flex items-center gap-3"><i class="fa fa-triangle-exclamation text-orange-500"></i><span class="cat-name">Warning</span></div>
                                 <span class="cat-badge text-orange-500">${counts.warning}</span>
-                            </div>
-                            <div onclick="renderFindings(JSON.parse('${JSON.stringify(findings).replace(/'/g, "\\'")}'), 'Suspicious')" class="cat-item">
-                                <div class="flex items-center gap-3">
-                                    <i class="fa fa-eye text-yellow-500"></i>
-                                    <span class="cat-name">Suspicious</span>
-                                </div>
-                                <span class="cat-badge text-yellow-500">${counts.suspicious}</span>
-                            </div>
-                            <div class="cat-item opacity-60">
-                                <div class="flex items-center gap-3"><i class="fa fa-shield-virus text-cyan-400"></i><span class="cat-name">Antivirus Logs</span></div>
-                                <span class="cat-badge text-cyan-400">0</span>
-                            </div>
-                            <div class="cat-item opacity-60">
-                                <div class="flex items-center gap-3"><i class="fa fa-file-signature text-blue-400"></i><span class="cat-name">Unsigned Files</span></div>
-                                <span class="cat-badge text-blue-400">0</span>
-                            </div>
-                            <div class="cat-item opacity-60">
-                                <div class="flex items-center gap-3"><i class="fa fa-usb text-indigo-400"></i><span class="cat-name">Usb Files</span></div>
-                                <span class="cat-badge text-indigo-400">0</span>
                             </div>
                         </div>
                     </div>
@@ -240,24 +246,32 @@
 
                 <div class="col-span-12 lg:col-span-8">
                     <h3 class="text-xl font-black uppercase italic mb-8 flex items-center gap-3 text-white"><span class="w-8 h-[2px] bg-red-600"></span> Live Analysis Findings</h3>
-                    <div id="findings-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-max"></div>
+                    <div id="findings-container">
+                        <div id="findings-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+                    </div>
                 </div>`;
             
             renderFindings(findings, 'Critical');
             document.getElementById('view-list').classList.add('hidden');
             document.getElementById('view-detail').classList.remove('hidden');
 
-            const items = document.querySelectorAll('.cat-item');
-            items.forEach(item => {
-                item.addEventListener('click', () => {
-                    items.forEach(i => i.classList.remove('active'));
-                    item.classList.add('active');
+            document.querySelectorAll('.cat-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    document.querySelectorAll('.cat-item').forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
                 });
             });
         }
 
         async function deleteCurrentScan() { if(confirm('DELETE RECORD?')) { await fetch(`${DB_URL}/pins/${openPin}.json`, { method: 'DELETE' }); abortSession(); loadPins(); } }
-        function abortSession() { document.getElementById('view-list').classList.remove('hidden'); document.getElementById('view-detail').classList.add('hidden'); }
+        
+        function abortSession(push = true) { 
+            if(push) updateRoute();
+            document.getElementById('view-list').classList.remove('hidden'); 
+            document.getElementById('view-detail').classList.add('hidden'); 
+            loadPins();
+        }
+
         function logout() { localStorage.removeItem('auth_status'); location.reload(); }
         async function generatePIN() {
             const pin = Math.floor(100000 + Math.random() * 900000).toString();
