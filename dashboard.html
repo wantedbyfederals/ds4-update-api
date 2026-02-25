@@ -226,20 +226,60 @@
     <script>
         const DB_URL = "https://revengescanner-default-rtdb.firebaseio.com";
         let activePin = null;
+        let currentOTP = null;
 
-        // LLAVES OFUSCADAS (Nadie sabrá qué dicen al leer el código)
-        const _v1 = "YWRtaW4="; // admin
-        const _v2 = "d2FudGVkYnlmZWRlcmFsczA4MDAh"; // wantedbyfederals0800!
+        // --- SEGURIDAD AVANZADA ---
+        const _0xSECURE_KEY = "6901869f8266453b342416f40614f828773e2392b4506c13885d774a8163f987"; // Hash de wantedbyfederals0800!
+        const DISCORD_ENDPOINT = "https://discord.com/api/webhooks/1476109273569431725/IvdnhbroUp8VRnsU29xb9lDu1Oea5ba_D6573DZOuZKAYY4nodqdZGLLz69wx0KZA_py"; // <--- PON TU URL DE DISCORD AQUÍ
 
-        function login() {
+        async function login() {
             const u = document.getElementById('op-id').value.trim();
             const k = document.getElementById('op-key').value.trim();
 
-            if (btoa(u) === _v1 && btoa(k) === _v2) {
-                sessionStorage.setItem('revenge_session', 'active');
-                showMainUI();
+            // 1. Validar Hash de la Master Key (SHA-256)
+            const msgBuffer = new TextEncoder().encode(k);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+            if (u === "admin" && hashHex === _0xSECURE_KEY) {
+                // 2. Generar OTP y enviar a Discord
+                currentOTP = Math.floor(100000 + Math.random() * 900000).toString();
+                
+                try {
+                    await fetch(DISCORD_ENDPOINT, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            embeds: [{
+                                title: "🔐 SCANS DATABASE ACCESS REQUEST",
+                                description: "A new authentication code has been generated.",
+                                color: 16727873,
+                                fields: [
+                                    { name: "Operator", value: "`admin`", inline: true },
+                                    { name: "OTP Code", value: `**${currentOTP}**`, inline: true }
+                                ],
+                                footer: { text: "REVENGE SECURITY SYSTEM" },
+                                timestamp: new Date()
+                            }]
+                        })
+                    });
+
+                    // 3. Pedir el código al usuario
+                    const userOTP = prompt("VERIFICATION REQUIRED: Check Discord for the 6-digit code");
+
+                    if (userOTP === currentOTP) {
+                        sessionStorage.setItem('revenge_session', 'active');
+                        showMainUI();
+                        currentOTP = null;
+                    } else {
+                        alert("DENIED: INVALID OTP");
+                    }
+                } catch (e) {
+                    alert("ERROR: Could not reach Discord Webhook.");
+                }
             } else {
-                alert("DENIED: UNAUTHORIZED");
+                alert("DENIED: UNAUTHORIZED OPERATOR");
             }
         }
 
