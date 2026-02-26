@@ -454,7 +454,7 @@ if (counts.critical > 0) {
     resultStatus = "SUSPICIOUS";
     resultColor = "text-orange-500";
     resultBg = "bg-orange-500/10";
-    resultIcon = "fa-shield-exclamation";
+    resultIcon = "fa-shield-exclamation"; // Icono añadido aquí
 }
 
 let scanDate = data.timestamp ? data.timestamp.split(',')[0] : '--';
@@ -516,6 +516,12 @@ ${data.pcName || "UNKNOWN"}
 <div>
 <div class="hw-label"><i class="fa fa-clock text-yellow-400"></i> System Uptime</div>
 <div class="hw-value">${specs.boot || "--"}</div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<div class="hw-label"><i class="fa fa-calendar-check text-cyan-400"></i> Format Date</div>
+<div class="hw-value">${specs.installDate || "Unknown"}</div>
 </div>
 </div>
 </div>
