@@ -86,10 +86,31 @@ max-height: 250px;
 overflow-y: auto;
 }
 
-/* SCROLLBARS BLANCOS */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-thumb { background: #ffffff; border-radius: 10px; }
-::-webkit-scrollbar-track { background: #0a0a0d; }
+/* --- SCROLLBARS BLANCOS GLOBALES --- */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #ffffff #0a0a0d;
+}
+
+::-webkit-scrollbar { 
+    width: 6px; 
+    height: 6px;
+}
+::-webkit-scrollbar-thumb { 
+    background: #ffffff; 
+    border-radius: 10px; 
+}
+::-webkit-scrollbar-track { 
+    background: #0a0a0d; 
+}
+
+/* Forzado para contenedores específicos */
+.custom-scrollbar::-webkit-scrollbar,
+#findings-container::-webkit-scrollbar,
+.recent-table-container::-webkit-scrollbar {
+    width: 6px;
+}
+/* ----------------------------------- */
 
 .hw-label {
 font-family: 'JetBrains Mono', monospace;
@@ -510,6 +531,9 @@ ${recentData.length > 0 ? recentData.sort((a, b) => new Date(b.lastRun) - new Da
     } else if(rawStatus === "DELETED" || rawStatus === "NOT FOUND") {
         statusColor = "text-red-500";
         statusText = "DELETED";
+    } else if(rawStatus === "INVALID" || rawStatus === "INVALID SIGNATURE") {
+        statusColor = "text-yellow-500";
+        statusText = "INVALID";
     }
 
     return `
