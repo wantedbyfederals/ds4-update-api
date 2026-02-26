@@ -13,7 +13,6 @@
 --bg-deep: #08080a;
 --panel-bg: #0d0d10;
 --accent: #ff4141;
---usb-accent: #ffb6c1;
 --glass-border: rgba(255, 255, 255, 0.05);
 }
 
@@ -87,26 +86,10 @@ max-height: 250px;
 overflow-y: auto;
 }
 
-/* SCROLLBARS BLANCOS - FORZADOS */
-::-webkit-scrollbar { 
-    width: 6px !important; 
-    height: 6px !important;
-}
-::-webkit-scrollbar-thumb { 
-    background: #ffffff !important; 
-    border-radius: 10px !important; 
-}
-::-webkit-scrollbar-track { 
-    background: #0a0a0d !important; 
-}
-
-.custom-scrollbar::-webkit-scrollbar {
-    width: 6px !important;
-}
-.custom-scrollbar::-webkit-scrollbar-thumb {
-    background: #ffffff !important;
-    border-radius: 10px !important;
-}
+/* SCROLLBARS BLANCOS */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-thumb { background: #ffffff; border-radius: 10px; }
+::-webkit-scrollbar-track { background: #0a0a0d; }
 
 .hw-label {
 font-family: 'JetBrains Mono', monospace;
@@ -355,11 +338,7 @@ ${data[pin].timestamp}
 
 function renderFindings(filter) {
 const container = document.getElementById('findings-grid');
-// Logica mejorada para el filtro USB
-const filtered = (currentFindings || []).filter(f => {
-    if (filter === 'USB Execution') return f.category === 'USB Execution';
-    return f.category === filter || (filter === 'Critical' && !f.category);
-});
+const filtered = (currentFindings || []).filter(f => f.category === filter || (filter === 'Critical' && !f.category));
 
 if (filtered.length === 0) {
 container.innerHTML = `
@@ -383,10 +362,6 @@ container.innerHTML = filtered.map(f => {
         colorClass = "bg-purple-600/20 text-purple-500 border-purple-500/20";
         borderStyle = "border-left-color: #a855f7";
         categoryName = "UNSIGNED";
-    } else if(f.category === 'USB Execution') {
-        colorClass = "bg-[#ffb6c1]/20 text-[#ffb6c1] border-[#ffb6c1]/20";
-        borderStyle = "border-left-color: #ffb6c1";
-        categoryName = "USB DETECTED";
     }
 
     return `
@@ -432,8 +407,7 @@ const recentData = data.recentActivity || [];
 const counts = {
 critical: currentFindings.filter(f => !f.category || f.category === 'Critical').length,
 warning: currentFindings.filter(f => f.category === 'Warning').length,
-unsigned: currentFindings.filter(f => f.category === 'Unsigned Files').length,
-usb: currentFindings.filter(f => f.category === 'USB Execution').length
+unsigned: currentFindings.filter(f => f.category === 'Unsigned Files').length
 };
 
 document.getElementById('report-content').innerHTML = `
@@ -489,13 +463,6 @@ ${data.pcName || "UNKNOWN"}
 </div>
 <span class="cat-badge text-purple-500">${counts.unsigned}</span>
 </div>
-<div onclick="renderFindings('USB Execution')" class="cat-item" id="cat-usb">
-<div class="flex items-center gap-3">
-<i class="fa fa-microchip text-[#ffb6c1]"></i>
-<span class="cat-name">USB Executions</span>
-</div>
-<span class="cat-badge text-[#ffb6c1]">${counts.usb}</span>
-</div>
 </div>
 </div>
 </div>
@@ -543,9 +510,6 @@ ${recentData.length > 0 ? recentData.sort((a, b) => new Date(b.lastRun) - new Da
     } else if(rawStatus === "DELETED" || rawStatus === "NOT FOUND") {
         statusColor = "text-red-500";
         statusText = "DELETED";
-    } else if(rawStatus === "INVALID" || rawStatus === "INVALID SIGNATURE") {
-        statusColor = "text-yellow-500";
-        statusText = "INVALID";
     }
 
     return `
@@ -620,10 +584,6 @@ pcName: "INITIALIZING..."
 })
 });
 loadPins();
-}
-
-function manageUsers() {
-    alert("User Management Module: Access Restricted.");
 }
 
 window.onload = () => {
