@@ -86,7 +86,6 @@ max-height: 250px;
 overflow-y: auto;
 }
 
-/* SCROLLBARS BLANCOS */
 .custom-scrollbar::-webkit-scrollbar {
 width: 6px;
 }
@@ -233,12 +232,19 @@ background: rgba(255, 65, 65, 0.05);
 <div id="view-list">
 <div class="flex justify-between items-center mb-12">
 <div>
-<h1 class="text-4xl font-black italic tracking-tight uppercase text-white">SCANS DATABASE</h1>
+<h1 class="text-4xl font-black italic tracking-tight text-white">Scans Database</h1>
 <p class="text-gray-500 text-xs font-bold uppercase mt-2">Real-time Terminal Monitoring</p>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative w-64">
+<i class="fa fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-[10px]"></i>
+<input type="text" id="scan-search" onkeyup="filterPins()" placeholder="SEARCH PC, PIN OR DATE..." 
+class="w-full bg-black/40 border border-white/10 p-4 pl-8 rounded-xl text-[10px] font-mono outline-none focus:border-red-500 text-white transition-colors">
 </div>
 <button onclick="generatePIN()" class="btn-action bg-white text-black px-8 py-4 rounded-xl hover:bg-red-600 hover:text-white shadow-2xl">
 GENERATE PIN
 </button>
+</div>
 </div>
 <div id="pins-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
 </div>
@@ -346,6 +352,20 @@ ${data[pin].timestamp}
 }
 }
 
+function filterPins() {
+const input = document.getElementById('scan-search').value.toUpperCase();
+const cards = document.querySelectorAll('.pin-card');
+
+cards.forEach(card => {
+const text = card.textContent || card.innerText;
+if (text.toUpperCase().indexOf(input) > -1) {
+card.style.display = "";
+} else {
+card.style.display = "none";
+}
+});
+}
+
 function renderFindings(filter) {
 const container = document.getElementById('findings-grid');
 const filtered = (currentFindings || []).filter(f => f.category === filter || (filter === 'Critical' && !f.category));
@@ -360,30 +380,30 @@ return;
 }
 
 container.innerHTML = filtered.map(f => {
-    let colorClass = "bg-red-600/20 text-red-500 border-red-500/20";
-    let borderStyle = "border-left-color: #ff4141";
-    let categoryName = "CRITICAL";
+    let colorClass = "bg-red-600/20 text-red-500 border-red-500/20";
+    let borderStyle = "border-left-color: #ff4141";
+    let categoryName = "CRITICAL";
 
-    if(f.category === 'Warning') {
-        colorClass = "bg-orange-600/20 text-orange-500 border-orange-500/20";
-        borderStyle = "border-left-color: #f97316";
-        categoryName = "WARNING";
-    } else if(f.category === 'Unsigned Files') {
-        colorClass = "bg-purple-600/20 text-purple-500 border-purple-500/20";
-        borderStyle = "border-left-color: #a855f7";
-        categoryName = "UNSIGNED";
-    }
+    if(f.category === 'Warning') {
+        colorClass = "bg-orange-600/20 text-orange-500 border-orange-500/20";
+        borderStyle = "border-left-color: #f97316";
+        categoryName = "WARNING";
+    } else if(f.category === 'Unsigned Files') {
+        colorClass = "bg-purple-600/20 text-purple-500 border-purple-500/20";
+        borderStyle = "border-left-color: #a855f7";
+        categoryName = "UNSIGNED";
+    }
 
-    return `
-    <div class="finding-entry" style="${borderStyle}">
-        <div class="flex justify-between items-start mb-2">
-            <h4 class="text-[11px] font-black uppercase tracking-tight text-white">${f.title}</h4>
-            <span class="text-[8px] ${colorClass} px-1.5 py-0.5 rounded font-black uppercase border">${categoryName}</span>
-        </div>
-        <p class="text-[10px] text-gray-400 font-mono italic break-all">
-            ${f.detail}
-        </p>
-    </div>`;
+    return `
+    <div class="finding-entry" style="${borderStyle}">
+        <div class="flex justify-between items-start mb-2">
+            <h4 class="text-[11px] font-black uppercase tracking-tight text-white">${f.title}</h4>
+            <span class="text-[8px] ${colorClass} px-1.5 py-0.5 rounded font-black uppercase border">${categoryName}</span>
+        </div>
+        <p class="text-[10px] text-gray-400 font-mono italic break-all">
+            ${f.detail}
+        </p>
+    </div>`;
 }).join('');
 }
 
@@ -494,7 +514,7 @@ ${data.pcName || "UNKNOWN"}
 </h3>
 <div class="relative w-64">
 <i class="fa fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-[10px]"></i>
-<input type="text" id="recent-search" onkeyup="filterRecentTable()" placeholder="SEARCH PROCESS OR PATH..." 
+<input type="text" id="recent-search" onkeyup="filterRecentTable()" placeholder="SEARCH PROCESS OR PATH..." 
 class="w-full bg-black/40 border border-white/10 p-2 pl-8 rounded-lg text-[10px] font-mono outline-none focus:border-red-500 text-white transition-colors">
 </div>
 </div>
@@ -510,37 +530,37 @@ class="w-full bg-black/40 border border-white/10 p-2 pl-8 rounded-lg text-[10px]
 </thead>
 <tbody>
 ${recentData.length > 0 ? recentData.sort((a, b) => new Date(b.lastRun) - new Date(a.lastRun)).map(app => {
-    let rawStatus = String(app.status).trim().toUpperCase();
-    let statusText = "UNSIGNED";
-    let statusColor = "text-orange-500";
-    
-    if(rawStatus === "TRUE" || rawStatus === "SIGNED" || rawStatus === "SUCCESS") {
-        statusColor = "text-green-500";
-        statusText = "TRUE";
-    } else if(rawStatus === "DELETED" || rawStatus === "NOT FOUND") {
-        statusColor = "text-red-500";
-        statusText = "DELETED";
-    } else if(rawStatus === "INVALID" || rawStatus === "INVALID SIGNATURE") {
-        statusColor = "text-yellow-500";
-        statusText = "INVALID";
-    }
+    let rawStatus = String(app.status).trim().toUpperCase();
+    let statusText = "UNSIGNED";
+    let statusColor = "text-orange-500";
+    
+    if(rawStatus === "TRUE" || rawStatus === "SIGNED" || rawStatus === "SUCCESS") {
+        statusColor = "text-green-500";
+        statusText = "TRUE";
+    } else if(rawStatus === "DELETED" || rawStatus === "NOT FOUND") {
+        statusColor = "text-red-500";
+        statusText = "DELETED";
+    } else if(rawStatus === "INVALID" || rawStatus === "INVALID SIGNATURE") {
+        statusColor = "text-yellow-500";
+        statusText = "INVALID";
+    }
 
-    return `
-    <tr class="recent-row table-row-hover border-b border-white/5 transition-colors">
-    <td class="px-4 py-3">
-    <div class="flex items-center gap-2">
-    <i class="fa fa-terminal text-red-500/50 text-[10px]"></i>
-    <span class="text-[11px] font-bold text-white">${app.name}</span>
-    </div>
-    </td>
-    <td class="px-4 py-3 text-center">
-        <span class="text-[8px] font-black uppercase px-2 py-0.5 rounded border border-white/5 ${statusColor}">
-            ${statusText}
-        </span>
-    </td>
-    <td class="px-4 py-3 text-[10px] font-mono text-gray-400 italic break-all">${app.path}</td>
-    <td class="px-4 py-3 text-right text-[10px] font-black text-red-400/80">${app.lastRun}</td>
-    </tr>`;
+    return `
+    <tr class="recent-row table-row-hover border-b border-white/5 transition-colors">
+    <td class="px-4 py-3">
+    <div class="flex items-center gap-2">
+    <i class="fa fa-terminal text-red-500/50 text-[10px]"></i>
+    <span class="text-[11px] font-bold text-white">${app.name}</span>
+    </div>
+    </td>
+    <td class="px-4 py-3 text-center">
+        <span class="text-[8px] font-black uppercase px-2 py-0.5 rounded border border-white/5 ${statusColor}">
+            ${statusText}
+        </span>
+    </td>
+    <td class="px-4 py-3 text-[10px] font-mono text-gray-400 italic break-all">${app.path}</td>
+    <td class="px-4 py-3 text-right text-[10px] font-black text-red-400/80">${app.lastRun}</td>
+    </tr>`;
 }).join('') : `
 <tr>
 <td colspan="4" class="px-4 py-8 text-center text-[10px] font-bold text-gray-600 uppercase tracking-widest">No recent execution data available</td>
